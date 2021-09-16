@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.WebAPI", "src\VertexFlow.WebAPI\VertexFlow.WebAPI.csproj", "{D587A043-4F58-4EC1-A380-4E05E448307D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.Core", "src\VertexFlow.Core\VertexFlow.Core.csproj", "{B322D5E3-CDC3-4AC0-848C-0C75F5222886}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.SDK", "src\VertexFlow.SDK\VertexFlow.SDK.csproj", "{7F5311BE-C329-4E0C-B50E-630FD0944328}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.RevitAddin", "src\VertexFlow.RevitAddin\VertexFlow.RevitAddin.csproj", "{BCE6073B-BF41-4928-BEDB-AA7935A7ECB6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D587A043-4F58-4EC1-A380-4E05E448307D} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
+		{B322D5E3-CDC3-4AC0-848C-0C75F5222886} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
+		{7F5311BE-C329-4E0C-B50E-630FD0944328} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
+		{BCE6073B-BF41-4928-BEDB-AA7935A7ECB6} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D587A043-4F58-4EC1-A380-4E05E448307D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D587A043-4F58-4EC1-A380-4E05E448307D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D587A043-4F58-4EC1-A380-4E05E448307D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D587A043-4F58-4EC1-A380-4E05E448307D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B322D5E3-CDC3-4AC0-848C-0C75F5222886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B322D5E3-CDC3-4AC0-848C-0C75F5222886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B322D5E3-CDC3-4AC0-848C-0C75F5222886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B322D5E3-CDC3-4AC0-848C-0C75F5222886}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F5311BE-C329-4E0C-B50E-630FD0944328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F5311BE-C329-4E0C-B50E-630FD0944328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F5311BE-C329-4E0C-B50E-630FD0944328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F5311BE-C329-4E0C-B50E-630FD0944328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE6073B-BF41-4928-BEDB-AA7935A7ECB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE6073B-BF41-4928-BEDB-AA7935A7ECB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE6073B-BF41-4928-BEDB-AA7935A7ECB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE6073B-BF41-4928-BEDB-AA7935A7ECB6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
