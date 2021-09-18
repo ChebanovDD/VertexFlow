@@ -2,5 +2,5 @@
 
 namespace VertexFlow.WebApplication.Models
 {
-    public record Mesh(int Id, int[] Triangles, Vector3[] Vertices, Vector3[] Normals);
+    public record Mesh(string Id, int[] Triangles, Vector3[] Vertices, Vector3[] Normals);
 }

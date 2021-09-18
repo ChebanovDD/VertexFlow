@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using VertexFlow.WebApplication.Interfaces.Repositories;
 using VertexFlow.WebApplication.Models;
+using VertexFlow.WebInfrastructure.Models;
 
 namespace VertexFlow.WebInfrastructure.Repositories
 {
@@ -15,29 +18,62 @@ namespace VertexFlow.WebInfrastructure.Repositories
             _dbContainer = dbContainer;
         }
 
-        public Task AddAsync(Mesh mesh)
+        public async Task AddAsync(Mesh mesh)
         {
-            throw new System.NotImplementedException();
+            await _dbContainer.CreateItemAsync(GetMeshDto(mesh), new PartitionKey(mesh.Id));
         }
 
-        public Task<Mesh> GetAsync(int meshId)
+        public async Task<Mesh> GetAsync(string meshId)
         {
-            throw new System.NotImplementedException();
+            var meshDto = await _dbContainer.ReadItemAsync<MeshDto>(meshId, new PartitionKey(meshId));
+            return meshDto == null ? null : GetMesh(meshDto);
         }
 
-        public IAsyncEnumerable<Mesh> GetAllAsync()
+        public async IAsyncEnumerable<Mesh> GetAllAsync()
         {
-            throw new System.NotImplementedException();
+            using var query = _dbContainer.GetItemLinqQueryable<MeshDto>().ToFeedIterator();
+
+            while (query.HasMoreResults)
+            {
+                foreach (var meshDto in await query.ReadNextAsync())
+                {
+                    yield return GetMesh(meshDto);
+                }
+            }
         }
 
-        public Task UpdateAsync(int meshId, Mesh newMesh)
+        public async Task UpdateAsync(string meshId, Mesh newMesh)
         {
-            throw new System.NotImplementedException();
+            await _dbContainer.UpsertItemAsync(GetMeshDto(newMesh), new PartitionKey(meshId));
         }
 
-        public Task DeleteAsync(int meshId)
+        public async Task DeleteAsync(string meshId)
         {
-            throw new System.NotImplementedException();
+            await _dbContainer.DeleteItemAsync<MeshDto>(meshId, new PartitionKey(meshId));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private MeshDto GetMeshDto(Mesh mesh)
+        {
+            return new MeshDto
+            {
+                Id = mesh.Id,
+                Triangles = mesh.Triangles,
+                Vertices = mesh.Vertices,
+                Normals = mesh.Normals
+            };
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Mesh GetMesh(MeshDto meshDto)
+        {
+            return new Mesh
+            (
+                meshDto.Id,
+                meshDto.Triangles,
+                meshDto.Vertices,
+                meshDto.Normals
+            );
         }
     }
 }

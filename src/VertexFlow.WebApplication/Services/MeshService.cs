@@ -23,7 +23,7 @@ namespace VertexFlow.WebApplication.Services
             await _meshRepository.AddAsync(mesh);
         }
 
-        public async Task<Mesh> GetAsync(int meshId)
+        public async Task<Mesh> GetAsync(string meshId)
         {
             return await _meshRepository.GetAsync(meshId);
         }
@@ -33,13 +33,13 @@ namespace VertexFlow.WebApplication.Services
             return _meshRepository.GetAllAsync();
         }
 
-        public async Task UpdateAsync(int meshId, Mesh newMesh)
+        public async Task UpdateAsync(string meshId, Mesh newMesh)
         {
             await _meshRepository.UpdateAsync(meshId, newMesh);
             await _meshNotifier.Update(meshId);
         }
 
-        public async Task DeleteAsync(int meshId)
+        public async Task DeleteAsync(string meshId)
         {
             await _meshRepository.DeleteAsync(meshId);
         }
