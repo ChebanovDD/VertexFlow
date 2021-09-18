@@ -1,6 +1,6 @@
 ﻿using VertexFlow.Core.Structs;
 
-namespace VertexFlow.WebAPI.Models
+namespace VertexFlow.Contracts.Models
 {
     public abstract record MeshData
     {

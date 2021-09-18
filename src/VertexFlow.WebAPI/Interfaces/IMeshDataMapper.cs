@@ -1,4 +1,5 @@
-﻿using VertexFlow.WebAPI.Models;
+﻿using VertexFlow.Contracts.Requests;
+using VertexFlow.Contracts.Responses;
 using VertexFlow.WebApplication.Models;
 
 namespace VertexFlow.WebAPI.Interfaces

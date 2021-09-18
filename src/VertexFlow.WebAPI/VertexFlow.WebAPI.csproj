@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\VertexFlow.Contracts\VertexFlow.Contracts.csproj" />
       <ProjectReference Include="..\VertexFlow.WebApplication\VertexFlow.WebApplication.csproj" />
       <ProjectReference Include="..\VertexFlow.WebInfrastructure\VertexFlow.WebInfrastructure.csproj" />
     </ItemGroup>

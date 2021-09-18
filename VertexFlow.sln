@@ -14,6 +14,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.WebApplication",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.WebInfrastructure", "src\VertexFlow.WebInfrastructure\VertexFlow.WebInfrastructure.csproj", "{C7197484-A16B-4768-94EE-09C060AB8399}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.Contracts", "src\VertexFlow.Contracts\VertexFlow.Contracts.csproj", "{FF7E89C2-6F37-4CE8-ABC4-DF1E874A0484}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{727E32D7-D90E-4285-BBAC-B391B2AD5A8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.SDK.Sample", "samples\VertexFlow.SDK.Sample\VertexFlow.SDK.Sample.csproj", "{7C284764-3D2E-4104-83B6-88ABBD406201}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +32,8 @@ Global
 		{BCE6073B-BF41-4928-BEDB-AA7935A7ECB6} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
 		{F40A3815-F2CF-40F8-8067-4E632A1F3204} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
 		{C7197484-A16B-4768-94EE-09C060AB8399} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
+		{FF7E89C2-6F37-4CE8-ABC4-DF1E874A0484} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
+		{7C284764-3D2E-4104-83B6-88ABBD406201} = {727E32D7-D90E-4285-BBAC-B391B2AD5A8E}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D587A043-4F58-4EC1-A380-4E05E448307D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -52,5 +60,13 @@ Global
 		{C7197484-A16B-4768-94EE-09C060AB8399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7197484-A16B-4768-94EE-09C060AB8399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7197484-A16B-4768-94EE-09C060AB8399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF7E89C2-6F37-4CE8-ABC4-DF1E874A0484}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF7E89C2-6F37-4CE8-ABC4-DF1E874A0484}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF7E89C2-6F37-4CE8-ABC4-DF1E874A0484}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF7E89C2-6F37-4CE8-ABC4-DF1E874A0484}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C284764-3D2E-4104-83B6-88ABBD406201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C284764-3D2E-4104-83B6-88ABBD406201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C284764-3D2E-4104-83B6-88ABBD406201}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C284764-3D2E-4104-83B6-88ABBD406201}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,6 @@
-﻿using VertexFlow.WebAPI.Interfaces;
-using VertexFlow.WebAPI.Models;
+﻿using VertexFlow.Contracts.Requests;
+using VertexFlow.Contracts.Responses;
+using VertexFlow.WebAPI.Interfaces;
 using VertexFlow.WebApplication.Models;
 
 namespace VertexFlow.WebAPI.Mappers

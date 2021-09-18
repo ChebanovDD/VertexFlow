@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using VertexFlow.Contracts.Requests;
+using VertexFlow.Contracts.Responses;
 using VertexFlow.WebAPI.Interfaces;
-using VertexFlow.WebAPI.Models;
 using VertexFlow.WebApplication.Interfaces.Services;
 
 namespace VertexFlow.WebAPI.Controllers
@@ -46,9 +47,9 @@ namespace VertexFlow.WebAPI.Controllers
         }
 
         [HttpPut("{meshId}")]
-        public async Task<IActionResult> Update([FromBody] MeshRequest meshRequest)
+        public async Task<IActionResult> Update(string meshId, [FromBody] MeshRequest meshRequest)
         {
-            await _meshService.UpdateAsync(meshRequest.Id, _mapper.FromRequest(meshRequest));
+            await _meshService.UpdateAsync(meshId, _mapper.FromRequest(meshRequest));
             return NoContent();
         }
 
