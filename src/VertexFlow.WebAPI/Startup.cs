@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using VertexFlow.WebAPI.Interfaces;
+using VertexFlow.WebAPI.Mappers;
 using VertexFlow.WebApplication;
 using VertexFlow.WebInfrastructure;
 
@@ -24,6 +26,7 @@ namespace VertexFlow.WebAPI
             services.AddControllers();
             services.AddApplication();
             services.AddInfrastructure(_configuration);
+            services.AddSingleton<IMeshDataMapper, MeshDataMapper>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "VertexFlow.WebAPI", Version = "v1" });

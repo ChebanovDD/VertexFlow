@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace VertexFlow.WebInfrastructure
 {
-    internal interface IMeshHub
+    public interface IMeshHub
     {
         Task Update(string meshId);
     }
     
-    internal class MeshHub : Hub<IMeshHub>
+    public class MeshHub : Hub<IMeshHub>
     {
     }
 }

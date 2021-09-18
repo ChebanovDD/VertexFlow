@@ -1,20 +1,20 @@
 ﻿using Newtonsoft.Json;
 using VertexFlow.Core.Structs;
 
-namespace VertexFlow.WebInfrastructure.Models
+namespace VertexFlow.WebInfrastructure.DTOs
 {
-    internal class MeshDto
+    internal record MeshDto
     {
         [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
+        public string Id { get; init; }
         
         [JsonProperty(PropertyName = "triangles")]
-        public int[] Triangles { get; set; }
+        public int[] Triangles { get; init; }
         
         [JsonProperty(PropertyName = "vertices")]
-        public Vector3[] Vertices { get; set; }
+        public Vector3[] Vertices { get; init; }
         
         [JsonProperty(PropertyName = "normals")]
-        public Vector3[] Normals { get; set; }
+        public Vector3[] Normals { get; init; }
     }
 }

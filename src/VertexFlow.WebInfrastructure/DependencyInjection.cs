@@ -16,8 +16,7 @@ namespace VertexFlow.WebInfrastructure
         {
             services.AddSignalR();
             services.AddSingleton<IMeshNotifier, MeshNotifier>();
-            services.AddSingleton<IMeshRepository>(
-                InitializeCosmosClientInstanceAsync(configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
+            services.AddSingleton<IMeshRepository>(InitializeCosmosClientInstanceAsync(configuration).GetAwaiter().GetResult());
         }
         
         public static void MapNotifiers(this IEndpointRouteBuilder endpoints)
@@ -25,12 +24,14 @@ namespace VertexFlow.WebInfrastructure
             endpoints.MapHub<MeshHub>("/notification");
         }
 
-        private static async Task<MeshRepository> InitializeCosmosClientInstanceAsync(IConfiguration configurationSection)
+        private static async Task<MeshRepository> InitializeCosmosClientInstanceAsync(IConfiguration configuration)
         {
-            var uri = configurationSection["Uri"];
-            var key = configurationSection["Key"];
-            var databaseName = configurationSection["DatabaseName"];
-            var containerName = configurationSection["ContainerName"];
+            var cosmosConfigSection = configuration.GetSection("CosmosDb");
+            
+            var uri = cosmosConfigSection["Uri"];
+            var key = cosmosConfigSection["Key"];
+            var databaseName = cosmosConfigSection["DatabaseName"];
+            var containerName = cosmosConfigSection["ContainerName"];
 
             var client = new CosmosClient(uri, key);
             var database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
