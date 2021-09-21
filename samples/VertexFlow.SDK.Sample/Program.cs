@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Refit;
-using VertexFlow.SDK.Interfaces;
 
 namespace VertexFlow.SDK.Sample
 {
     static class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
-            var meshesApi = RestService.For<IMeshesApi>("https://localhost:5001");
-
-            var meshes = await meshesApi.GetAllAsync();
-            if (meshes.Content == null)
-            {
-                return;
-            }
+            using var vertexFlow = new VertexFlow("https://localhost:5001");
             
-            foreach (var mesh in meshes.Content)
+            var meshStore = vertexFlow.CreateMeshStore<CustomMesh>();
+            await foreach (var mesh in meshStore.GetAllAsync())
             {
                 Console.WriteLine(mesh.Id);
             }

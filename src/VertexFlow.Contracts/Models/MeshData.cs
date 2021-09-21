@@ -1,12 +1,10 @@
-﻿using VertexFlow.Core.Structs;
-
-namespace VertexFlow.Contracts.Models
+﻿namespace VertexFlow.Contracts.Models
 {
-    public abstract record MeshData
+    public abstract record MeshData<TVector3>
     {
         public string Id { get; init; }
         public int[] Triangles { get; init; }
-        public Vector3[] Vertices { get; init; }
-        public Vector3[] Normals { get; init; }
+        public TVector3[] Vertices { get; init; }
+        public TVector3[] Normals { get; init; }
     }
 }

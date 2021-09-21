@@ -1,24 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Refit;
-using VertexFlow.Contracts.Requests;
-using VertexFlow.Contracts.Responses;
 
 namespace VertexFlow.SDK.Interfaces
 {
-    public interface IMeshesApi
+    internal interface IMeshesApi
     {
         [Post("/api/meshes")]
-        Task<ApiResponse<MeshResponse>> Create([Body] MeshRequest meshRequest);
+        Task<ApiResponse<TResponse>> Create<TRequest, TResponse>([Body] TRequest meshRequest);
 
         [Get("/api/meshes/{meshId}")]
-        Task<ApiResponse<MeshResponse>> GetAsync(string meshId);
+        Task<ApiResponse<TResponse>> GetAsync<TResponse>(string meshId);
 
         [Get("/api/meshes")]
-        Task<ApiResponse<IEnumerable<MeshResponse>>> GetAllAsync();
+        Task<ApiResponse<TResponse[]>> GetAllAsync<TResponse>();
         
         [Put("/api/meshes/{meshId}")]
-        Task<ApiResponse<string>> UpdateAsync(string meshId, [Body] MeshRequest meshRequest);
+        Task<ApiResponse<string>> UpdateAsync<TRequest>(string meshId, [Body] TRequest meshRequest);
         
         [Delete("/api/meshes/{meshId}")]
         Task<ApiResponse<string>> DeleteAsync(string meshId);

@@ -6,10 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Refit" Version="6.0.94" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\src\VertexFlow.SDK\VertexFlow.SDK.csproj" />
     </ItemGroup>
 
