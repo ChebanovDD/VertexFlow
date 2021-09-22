@@ -9,7 +9,7 @@ namespace VertexFlow.SDK.Listeners
     internal class MeshFlowListener : IMeshFlowListener
     {
         private readonly HubConnection _hubConnection;
-        private readonly List<IDisposable> _disposables = new();
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
         
         public event EventHandler<string> MeshUpdated;
 
@@ -23,16 +23,6 @@ namespace VertexFlow.SDK.Listeners
             _disposables.Add(update);
         }
 
-        public async ValueTask DisposeAsync()
-        {
-            await StopConnectionAsync();
-
-            for (var i = 0; i < _disposables.Count; i++)
-            {
-                _disposables[i].Dispose();
-            }
-        }
-
         public async Task StartAsync()
         {
             if (_hubConnection.State == HubConnectionState.Disconnected)
@@ -43,20 +33,23 @@ namespace VertexFlow.SDK.Listeners
 
         public async Task StopAsync()
         {
-            await StopConnectionAsync();
-        }
-
-        private void OnMeshUpdated(string meshId)
-        {
-            MeshUpdated?.Invoke(this, meshId);
-        }
-
-        private async Task StopConnectionAsync()
-        {
             if (_hubConnection.State == HubConnectionState.Connected)
             {
                 await _hubConnection.StopAsync();
             }
+        }
+
+        public void Dispose()
+        {
+            for (var i = 0; i < _disposables.Count; i++)
+            {
+                _disposables[i].Dispose();
+            }
+        }
+        
+        private void OnMeshUpdated(string meshId)
+        {
+            MeshUpdated?.Invoke(this, meshId);
         }
     }
 }

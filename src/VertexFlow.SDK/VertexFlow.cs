@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Net.Http;
-using Refit;
 using VertexFlow.Contracts.Responses;
 using VertexFlow.SDK.Interfaces;
+using VertexFlow.SDK.Services;
 
 namespace VertexFlow.SDK
 {
     public class VertexFlow : IDisposable
     {
-        private readonly IMeshesApi _meshesApi;
-        private readonly HttpClient _httpClient;
+        private readonly IMeshApi _meshesApi;
         
-        public string Server => _httpClient.BaseAddress?.OriginalString;
-        
+        public string Server => _meshesApi.BaseAddress;
+
         public VertexFlow(string server)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri(server) };
-            _meshesApi = RestService.For<IMeshesApi>(_httpClient);
+            _meshesApi = new MeshApiService(new HttpClient { BaseAddress = new Uri(server) });
         }
-        
+
         public IMeshFlow<MeshResponse> CreateMeshFlow()
         {
             return new MeshFlow<MeshResponse>(_meshesApi);
@@ -41,7 +39,7 @@ namespace VertexFlow.SDK
         
         public void Dispose()
         {
-            _httpClient?.Dispose();
+            _meshesApi?.Dispose();
         }
     }
 }

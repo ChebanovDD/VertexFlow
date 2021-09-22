@@ -12,20 +12,21 @@ namespace VertexFlow.SDK.Sample
         static async Task Main()
         {
             using var vertexFlow = new VertexFlow("https://localhost:5001");
-
-            await using var meshFlowListener = vertexFlow.CreateMeshFlowListener();
+            using var meshFlowListener = vertexFlow.CreateMeshFlowListener();
+            
             meshFlowListener.MeshUpdated += OnMeshUpdated;
             await meshFlowListener.StartAsync();
             
             _meshStore = vertexFlow.CreateMeshStore<CustomMesh>();
+            var meshes = await _meshStore.GetAllAsync();
             var meshFlow = vertexFlow.CreateMeshFlow<CustomMesh>();
             
-            await foreach (var mesh in _meshStore.GetAllAsync())
+            foreach (var mesh in meshes)
             {
                 Console.WriteLine(mesh.Id);
 
-                await Task.Delay(1000);
                 await meshFlow.UpdateAsync(mesh.Id, mesh);
+                await Task.Delay(1000);
             }
             
             meshFlowListener.MeshUpdated -= OnMeshUpdated;

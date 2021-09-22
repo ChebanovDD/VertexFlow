@@ -3,5 +3,7 @@ using VertexFlow.Core.Structs;
 
 namespace VertexFlow.Contracts.Requests
 {
-    public record MeshRequest : MeshData<Vector3>;
+    public class MeshRequest : MeshData<Vector3>
+    {
+    }
 }

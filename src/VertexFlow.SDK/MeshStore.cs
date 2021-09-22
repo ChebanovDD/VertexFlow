@@ -1,42 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using VertexFlow.SDK.Interfaces;
 
 namespace VertexFlow.SDK
 {
     internal class MeshStore<TMeshData> : IMeshStore<TMeshData>
     {
-        private readonly IMeshesApi _meshesApi;
-        
-        public MeshStore(IMeshesApi meshesApi)
-        {
-            _meshesApi = meshesApi;
-        }
+        private readonly IMeshApi _meshApi;
 
+        public MeshStore(IMeshApi meshApi)
+        {
+            _meshApi = meshApi;
+        }
+        
         public async Task<TMeshData> GetAsync(string meshId)
         {
-            var response = await _meshesApi.GetAsync<TMeshData>(meshId);
-            return response.Content;
+            return await _meshApi.GetAsync<TMeshData>(meshId);
         }
-        
-        public async IAsyncEnumerable<TMeshData> GetAllAsync()
-        {
-            var response = await _meshesApi.GetAllAsync<TMeshData>();
-            if (response.Content == null)
-            {
-                yield break;
-            }
 
-            var count = response.Content.Length;
-            for (var i = 0; i < count; i++)
-            {
-                yield return response.Content[i];
-            }
+        public async Task<TMeshData[]> GetAllAsync()
+        {
+            return await _meshApi.GetAllAsync<TMeshData>();
         }
-        
+
         public async Task DeleteAsync(string meshId)
         {
-            await _meshesApi.DeleteAsync(meshId);
+            await _meshApi.DeleteAsync(meshId);
         }
     }
 }

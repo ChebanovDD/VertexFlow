@@ -3,5 +3,7 @@ using VertexFlow.Core.Structs;
 
 namespace VertexFlow.Contracts.Responses
 {
-    public record MeshResponse : MeshData<Vector3>;
+    public class MeshResponse : MeshData<Vector3>
+    {
+    }
 }

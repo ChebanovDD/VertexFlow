@@ -8,6 +8,8 @@ namespace VertexFlow.SDK.Sample
         public float Y { get; set; }
         public float Z { get; set; }
     }
-    
-    public record CustomMesh : MeshData<CustomVector3>;
+
+    public class CustomMesh : MeshData<CustomVector3>
+    {
+    }
 }
