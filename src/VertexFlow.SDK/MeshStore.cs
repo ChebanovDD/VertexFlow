@@ -4,7 +4,7 @@ using VertexFlow.SDK.Interfaces;
 
 namespace VertexFlow.SDK
 {
-    internal class MeshStore<TMeshData> : IMeshStore<TMeshData>, IFlowService
+    internal class MeshStore<TMeshData> : IMeshStore<TMeshData>
     {
         private readonly IMeshesApi _meshesApi;
         
