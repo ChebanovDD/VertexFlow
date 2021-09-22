@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{727E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.SDK.Sample", "samples\VertexFlow.SDK.Sample\VertexFlow.SDK.Sample.csproj", "{7C284764-3D2E-4104-83B6-88ABBD406201}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.SDK.Listeners", "src\VertexFlow.SDK.Listeners\VertexFlow.SDK.Listeners.csproj", "{1B158941-CDDF-44CC-BF40-DB486C28B42C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,7 @@ Global
 		{C7197484-A16B-4768-94EE-09C060AB8399} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
 		{FF7E89C2-6F37-4CE8-ABC4-DF1E874A0484} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
 		{7C284764-3D2E-4104-83B6-88ABBD406201} = {727E32D7-D90E-4285-BBAC-B391B2AD5A8E}
+		{1B158941-CDDF-44CC-BF40-DB486C28B42C} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D587A043-4F58-4EC1-A380-4E05E448307D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -68,5 +71,9 @@ Global
 		{7C284764-3D2E-4104-83B6-88ABBD406201}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C284764-3D2E-4104-83B6-88ABBD406201}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C284764-3D2E-4104-83B6-88ABBD406201}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B158941-CDDF-44CC-BF40-DB486C28B42C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B158941-CDDF-44CC-BF40-DB486C28B42C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B158941-CDDF-44CC-BF40-DB486C28B42C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B158941-CDDF-44CC-BF40-DB486C28B42C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
