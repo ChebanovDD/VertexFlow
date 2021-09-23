@@ -14,12 +14,12 @@ namespace VertexFlow.SDK
         
         public async Task SendAsync(TMeshData mesh)
         {
-            await _meshesApi.Create<TMeshData>(mesh);
+            await _meshesApi.Create<TMeshData>(mesh).ConfigureAwait(false);
         }
 
         public async Task UpdateAsync(string meshId, TMeshData mesh)
         {
-            await _meshesApi.UpdateAsync(meshId, mesh);
+            await _meshesApi.UpdateAsync(meshId, mesh).ConfigureAwait(false);
         }
     }
 }

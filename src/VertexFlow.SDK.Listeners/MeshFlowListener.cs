@@ -27,7 +27,7 @@ namespace VertexFlow.SDK.Listeners
         {
             if (_hubConnection.State == HubConnectionState.Disconnected)
             {
-                await _hubConnection.StartAsync();
+                await _hubConnection.StartAsync().ConfigureAwait(false);
             }
         }
 
@@ -35,7 +35,7 @@ namespace VertexFlow.SDK.Listeners
         {
             if (_hubConnection.State == HubConnectionState.Connected)
             {
-                await _hubConnection.StopAsync();
+                await _hubConnection.StopAsync().ConfigureAwait(false);
             }
         }
 
