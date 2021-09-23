@@ -7,7 +7,7 @@ namespace VertexFlow.SDK.Listeners.Interfaces
     {
         event EventHandler<string> MeshUpdated;
         
-        Task StartAsync();
-        Task StopAsync();
+        Task<IMeshFlowListener> StartAsync();
+        Task<IMeshFlowListener> StopAsync();
     }
 }

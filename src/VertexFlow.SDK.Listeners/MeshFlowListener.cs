@@ -23,20 +23,24 @@ namespace VertexFlow.SDK.Listeners
             _disposables.Add(update);
         }
 
-        public async Task StartAsync()
+        public async Task<IMeshFlowListener> StartAsync()
         {
             if (_hubConnection.State == HubConnectionState.Disconnected)
             {
                 await _hubConnection.StartAsync().ConfigureAwait(false);
             }
+
+            return this;
         }
 
-        public async Task StopAsync()
+        public async Task<IMeshFlowListener> StopAsync()
         {
             if (_hubConnection.State == HubConnectionState.Connected)
             {
                 await _hubConnection.StopAsync().ConfigureAwait(false);
             }
+
+            return this;
         }
 
         public void Dispose()

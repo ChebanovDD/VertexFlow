@@ -1,44 +1,34 @@
 ﻿using System;
 using System.Threading.Tasks;
+using VertexFlow.SDK.Extensions.Extensions;
 using VertexFlow.SDK.Listeners;
-using VertexFlow.SDK.Interfaces;
 
 namespace VertexFlow.SDK.Sample
 {
     static class Program
     {
-        private static IMeshStore<CustomMesh> _meshStore;
-
         static async Task Main()
         {
             using var vertexFlow = new VertexFlow("https://localhost:5001");
-            using var meshFlowListener = vertexFlow.CreateMeshFlowListener();
             
-            meshFlowListener.MeshUpdated += OnMeshUpdated;
-            await meshFlowListener.StartAsync();
-            
-            _meshStore = vertexFlow.CreateMeshStore<CustomMesh>();
-            var meshes = await _meshStore.GetAllAsync();
             var meshFlow = vertexFlow.CreateMeshFlow<CustomMesh>();
+            var meshStore = vertexFlow.CreateMeshStore<CustomMesh>();
             
-            foreach (var mesh in meshes)
+            using var meshFlowListener = await vertexFlow
+                .CreateMeshFlowListener()
+                .WithStore(meshStore)
+                .OnMeshUpdated(mesh => Console.WriteLine($"Mesh '{mesh.Id}' updated."))
+                .StartAsync();
+            
+            foreach (var mesh in await meshStore.GetAllAsync())
             {
-                Console.WriteLine(mesh.Id);
-
+                Console.WriteLine($"Mesh '{mesh.Id}' downloaded.");
+                
                 await meshFlow.UpdateAsync(mesh.Id, mesh);
-                await Task.Delay(1000);
+                await Task.Delay(100);
             }
             
-            meshFlowListener.MeshUpdated -= OnMeshUpdated;
-        }
-
-        private static async void OnMeshUpdated(object sender, string meshId)
-        {
-            var mesh = await _meshStore.GetAsync(meshId);
-            if (mesh != null)
-            {
-                Console.WriteLine($"Mesh '{mesh.Id}' updated.");
-            }
+            await meshFlowListener.StopAsync();
         }
     }
 }
