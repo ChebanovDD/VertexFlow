@@ -2,7 +2,7 @@
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Listeners.Interfaces;
 
-namespace VertexFlow.SDK.Extensions.Extensions
+namespace VertexFlow.SDK.Extensions
 {
     public static class MeshFlowListenerExtensions
     {

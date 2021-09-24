@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using VertexFlow.SDK.Extensions.Extensions;
+using VertexFlow.SDK.Extensions;
 using VertexFlow.SDK.Listeners;
 
 namespace VertexFlow.SDK.Sample
