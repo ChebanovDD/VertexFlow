@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using VertexFlow.WebApplication.Models;
 
@@ -9,7 +10,7 @@ namespace VertexFlow.WebApplication.Interfaces.Repositories
         Task AddAsync(Mesh mesh);
         Task<Mesh> GetAsync(string meshId);
         IAsyncEnumerable<Mesh> GetAllAsync();
-        Task UpdateAsync(string meshId, Mesh newMesh);
+        Task<HttpStatusCode> UpdateAsync(string meshId, Mesh newMesh);
         Task DeleteAsync(string meshId);
     }
 }

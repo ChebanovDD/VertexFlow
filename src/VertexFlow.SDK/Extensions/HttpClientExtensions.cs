@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -16,7 +17,7 @@ namespace VertexFlow.SDK.Extensions
 
         public static async Task<T> GetAsObjectAsync<T>(this HttpClient client, string requestUri)
         {
-            var response = await client.GetAsync(requestUri).ConfigureAwait(false);
+            var response = await client.GetAsync(requestUri, CancellationToken.None).ConfigureAwait(false);
             if (response.IsSuccessStatusCode == false)
             {
                 return default;

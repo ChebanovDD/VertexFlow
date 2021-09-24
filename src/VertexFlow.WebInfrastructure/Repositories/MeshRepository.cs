@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
@@ -20,12 +21,17 @@ namespace VertexFlow.WebInfrastructure.Repositories
 
         public async Task AddAsync(Mesh mesh)
         {
-            await _dbContainer.CreateItemAsync<MeshDto>(mesh.ToDto(), new PartitionKey(mesh.Id));
+            await _dbContainer
+                .CreateItemAsync<MeshDto>(mesh.ToDto(), new PartitionKey(mesh.Id))
+                .ConfigureAwait(false);
         }
 
         public async Task<Mesh> GetAsync(string meshId)
         {
-            var meshDto = await _dbContainer.ReadItemAsync<MeshDto>(meshId, new PartitionKey(meshId));
+            var meshDto = await _dbContainer
+                .ReadItemAsync<MeshDto>(meshId, new PartitionKey(meshId))
+                .ConfigureAwait(false);
+            
             return meshDto?.Resource.ToMesh();
         }
 
@@ -35,21 +41,25 @@ namespace VertexFlow.WebInfrastructure.Repositories
 
             while (query.HasMoreResults)
             {
-                foreach (var meshDto in await query.ReadNextAsync())
+                foreach (var meshDto in await query.ReadNextAsync().ConfigureAwait(false))
                 {
                     yield return meshDto.ToMesh();
                 }
             }
         }
 
-        public async Task UpdateAsync(string meshId, Mesh newMesh)
+        public async Task<HttpStatusCode> UpdateAsync(string meshId, Mesh mesh)
         {
-            await _dbContainer.UpsertItemAsync<MeshDto>(newMesh.ToDto(), new PartitionKey(meshId));
+            var response = await _dbContainer
+                .UpsertItemAsync<MeshDto>(mesh.ToDto(), new PartitionKey(meshId))
+                .ConfigureAwait(false);
+            
+            return response.StatusCode;
         }
 
         public async Task DeleteAsync(string meshId)
         {
-            await _dbContainer.DeleteItemAsync<MeshDto>(meshId, new PartitionKey(meshId));
+            await _dbContainer.DeleteItemAsync<MeshDto>(meshId, new PartitionKey(meshId)).ConfigureAwait(false);
         }
     }
 }

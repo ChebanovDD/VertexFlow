@@ -11,6 +11,7 @@ namespace VertexFlow.SDK.Listeners
         private readonly HubConnection _hubConnection;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         
+        public event EventHandler<string> MeshCreated;
         public event EventHandler<string> MeshUpdated;
 
         public MeshFlowListener(string server)
@@ -19,15 +20,27 @@ namespace VertexFlow.SDK.Listeners
                 .WithUrl($"{server}/notification")
                 .Build();
 
-            var update = _hubConnection.On<string>("Update", OnMeshUpdated);
-            _disposables.Add(update);
+            var meshCreatedConnection = _hubConnection.On<string>("Created", OnMeshCreated);
+            var meshUpdatedConnection = _hubConnection.On<string>("Updated", OnMeshUpdated);
+            
+            _disposables.Add(meshCreatedConnection);
+            _disposables.Add(meshUpdatedConnection);
         }
 
-        public async Task<IMeshFlowListener> StartAsync()
+        public async Task<IMeshFlowListener> StartAsync(Action<Exception> onException = null)
         {
-            if (_hubConnection.State == HubConnectionState.Disconnected)
+            if (_hubConnection.State != HubConnectionState.Disconnected)
+            {
+                return this;
+            }
+
+            try
             {
                 await _hubConnection.StartAsync().ConfigureAwait(false);
+            }
+            catch (Exception exception) when (onException != null)
+            {
+                onException(exception);
             }
 
             return this;
@@ -49,6 +62,11 @@ namespace VertexFlow.SDK.Listeners
             {
                 _disposables[i].Dispose();
             }
+        }
+        
+        private void OnMeshCreated(string meshId)
+        {
+            MeshCreated?.Invoke(this, meshId);
         }
         
         private void OnMeshUpdated(string meshId)

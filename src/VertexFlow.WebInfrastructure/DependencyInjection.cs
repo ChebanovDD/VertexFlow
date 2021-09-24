@@ -27,16 +27,16 @@ namespace VertexFlow.WebInfrastructure
         private static async Task<MeshRepository> CreateMeshRepositoryAsync(IConfiguration configuration)
         {
             var cosmosConfigSection = configuration.GetSection("CosmosDb");
-            
+
             var uri = cosmosConfigSection["Uri"];
             var key = cosmosConfigSection["Key"];
             var databaseName = cosmosConfigSection["DatabaseName"];
             var containerName = cosmosConfigSection["ContainerName"];
 
             var client = new CosmosClient(uri, key);
-            var database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
-            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
-            
+            var database = await client.CreateDatabaseIfNotExistsAsync(databaseName).ConfigureAwait(false);
+            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id").ConfigureAwait(false);
+
             return new MeshRepository(client.GetContainer(databaseName, containerName));
         }
     }

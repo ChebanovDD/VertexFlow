@@ -4,6 +4,7 @@ namespace VertexFlow.WebApplication.Interfaces
 {
     public interface IMeshNotifier
     {
-        Task Update(string meshId);
+        Task Created(string meshId);
+        Task Updated(string meshId);
     }
 }

@@ -13,9 +13,14 @@ namespace VertexFlow.WebInfrastructure
             _meshNotificationHub = meshNotificationHub;
         }
 
-        public async Task Update(string meshId)
+        public async Task Created(string meshId)
         {
-            await _meshNotificationHub.Clients.All.Update(meshId);
+            await _meshNotificationHub.Clients.All.Created(meshId).ConfigureAwait(false);
+        }
+        
+        public async Task Updated(string meshId)
+        {
+            await _meshNotificationHub.Clients.All.Updated(meshId).ConfigureAwait(false);
         }
     }
 }

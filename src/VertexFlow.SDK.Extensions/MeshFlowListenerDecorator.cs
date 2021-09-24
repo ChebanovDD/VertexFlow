@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using VertexFlow.SDK.Extensions.Extensions;
 using VertexFlow.SDK.Extensions.Interfaces;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Listeners.Interfaces;
@@ -8,10 +9,18 @@ namespace VertexFlow.SDK.Extensions
 {
     internal class MeshFlowListenerDecorator<TMeshData> : IMeshFlowListenerDecorator<TMeshData>
     {
+        private bool _continueOnCapturedContext = true;
+        private Action<TMeshData> _onMeshCreated;
         private Action<TMeshData> _onMeshUpdated;
         private readonly IMeshStore<TMeshData> _meshStore;
         private readonly IMeshFlowListener _meshFlowListener;
 
+        public event EventHandler<string> MeshCreated
+        {
+            add => _meshFlowListener.MeshCreated += value;
+            remove => _meshFlowListener.MeshCreated -= value;
+        }
+        
         public event EventHandler<string> MeshUpdated
         {
             add => _meshFlowListener.MeshUpdated += value;
@@ -22,17 +31,30 @@ namespace VertexFlow.SDK.Extensions
         {
             _meshStore = meshStore;
             _meshFlowListener = meshFlowListener;
+            _meshFlowListener.MeshCreated += OnMeshCreated;
             _meshFlowListener.MeshUpdated += OnMeshUpdated;
         }
 
-        public async Task<IMeshFlowListener> StartAsync()
+        public async Task<IMeshFlowListener> StartAsync(Action<Exception> onException = null)
         {
-            return await _meshFlowListener.StartAsync().ConfigureAwait(false);
+            return await _meshFlowListener.StartAsync(onException).ConfigureAwait(false);
         }
 
-        public IMeshFlowListener OnMeshUpdated(Action<TMeshData> action)
+        public IMeshFlowListenerDecorator<TMeshData> OnMeshCreated(Action<TMeshData> action)
+        {
+            _onMeshCreated = action;
+            return this;
+        }
+        
+        public IMeshFlowListenerDecorator<TMeshData> OnMeshUpdated(Action<TMeshData> action)
         {
             _onMeshUpdated = action;
+            return this;
+        }
+
+        public IMeshFlowListenerDecorator<TMeshData> ContinueOnCapturedContext(bool value = true)
+        {
+            _continueOnCapturedContext = value;
             return this;
         }
 
@@ -43,29 +65,34 @@ namespace VertexFlow.SDK.Extensions
 
         public void Dispose()
         {
+            _onMeshCreated = null;
             _onMeshUpdated = null;
+            _meshFlowListener.MeshCreated -= OnMeshCreated;
             _meshFlowListener.MeshUpdated -= OnMeshUpdated;
             _meshFlowListener.Dispose();
         }
 
-        private async void OnMeshUpdated(object sender, string meshId)
+        private void OnMeshCreated(object sender, string meshId)
         {
-            if (_onMeshUpdated == null)
+            RaiseMeshChanged(meshId, _onMeshCreated, _continueOnCapturedContext).Forget(false);
+        }
+
+        private void OnMeshUpdated(object sender, string meshId)
+        {
+            RaiseMeshChanged(meshId, _onMeshUpdated, _continueOnCapturedContext).Forget(false);
+        }
+
+        private async Task RaiseMeshChanged(string meshId, Action<TMeshData> action, bool configureAwait)
+        {
+            if (action == null)
             {
                 return;
             }
-            
-            try
+
+            var mesh = await _meshStore.GetAsync(meshId).ConfigureAwait(configureAwait);
+            if (mesh != null)
             {
-                var mesh = await _meshStore.GetAsync(meshId).ConfigureAwait(false);
-                if (mesh != null)
-                {
-                    _onMeshUpdated(mesh);
-                }
-            }
-            catch
-            {
-                // ignored
+                action(mesh);
             }
         }
     }

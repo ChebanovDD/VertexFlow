@@ -5,7 +5,8 @@ namespace VertexFlow.WebInfrastructure
 {
     public interface IMeshHub
     {
-        Task Update(string meshId);
+        Task Created(string meshId);
+        Task Updated(string meshId);
     }
     
     public class MeshHub : Hub<IMeshHub>

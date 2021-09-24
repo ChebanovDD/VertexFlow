@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using VertexFlow.SDK.Extensions.Extensions;
 using VertexFlow.SDK.Listeners;
@@ -18,7 +19,7 @@ namespace VertexFlow.SDK.Sample
                 .CreateMeshFlowListener()
                 .WithStore(meshStore)
                 .OnMeshUpdated(mesh => Console.WriteLine($"Mesh '{mesh.Id}' updated."))
-                .StartAsync();
+                .StartAsync(exception => throw new HttpRequestException(exception.Message));
             
             foreach (var mesh in await meshStore.GetAllAsync())
             {
