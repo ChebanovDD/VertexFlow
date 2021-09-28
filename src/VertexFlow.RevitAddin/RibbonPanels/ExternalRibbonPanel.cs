@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.UI;
-using VertexFlow.RevitAddin.Commands;
 using VertexFlow.RevitAddin.Interfaces;
 
 namespace VertexFlow.RevitAddin.RibbonPanels
@@ -15,7 +14,7 @@ namespace VertexFlow.RevitAddin.RibbonPanels
         
         protected abstract void OnBuild(RibbonPanel ribbonPanel);
         
-        protected ButtonData CreatePushButton<TCommand>() where TCommand : ExternalCommand, new()
+        protected ButtonData CreatePushButton<TCommand>() where TCommand : IAppCommand, new()
         {
             var command = new TCommand();
             var commandType = typeof(TCommand);

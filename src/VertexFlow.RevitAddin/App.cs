@@ -1,32 +1,27 @@
-﻿using System.Collections.Generic;
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using VertexFlow.RevitAddin.Extensions;
+﻿using Autodesk.Revit.UI;
+using Autofac;
 using VertexFlow.RevitAddin.Interfaces;
-using VertexFlow.RevitAddin.RibbonPanels;
 
 namespace VertexFlow.RevitAddin
 {
     public class App : IExternalApplication, IApp
     {
+        private ILifetimeScope _scope;
+        
         public Result OnStartup(UIControlledApplication application)
         {
-            application.AddRibbonPanel<VertexFlowRibbonPanel>();
+            _scope = application.Configure().BeginLifetimeScope();
             return Result.Succeeded;
         }
         
-        public void ExportSelectedElements(IEnumerable<ElementId> elementIds)
+        public T Resolve<T>()
         {
-            TaskDialog.Show("VertexFlow", "ExportSelectedElements.");
-        }
-        
-        public void SubscribeToElementsChanges(IEnumerable<ElementId> elementIds)
-        {
-            TaskDialog.Show("VertexFlow", "SubscribeToElementsChanges.");
+            return _scope.Resolve<T>();
         }
         
         public Result OnShutdown(UIControlledApplication application)
         {
+            _scope?.Dispose();
             return Result.Succeeded;
         }
     }
