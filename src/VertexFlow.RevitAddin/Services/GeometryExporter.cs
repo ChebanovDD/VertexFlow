@@ -3,7 +3,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using VertexFlow.RevitAddin.Interfaces;
 
-namespace VertexFlow.RevitAddin
+namespace VertexFlow.RevitAddin.Services
 {
     public class GeometryExporter : IAppService
     {
