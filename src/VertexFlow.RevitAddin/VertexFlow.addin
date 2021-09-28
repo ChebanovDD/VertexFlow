@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+    <AddIn Type="Application">
+        <Name>VertexFlow</Name>
+        <FullClassName>VertexFlow.RevitAddin.App</FullClassName>
+        <Assembly>
+            D:\_AppsData\RiderProjects\VertexFlow\src\VertexFlow.RevitAddin\bin\Debug\VertexFlow.RevitAddin.dll
+        </Assembly>
+        <AddInId>BCE6073B-BF41-4928-BEDB-AA7935A7ECB6</AddInId>
+        <VendorId>VendorId</VendorId>
+        <VendorDescription>VendorDescription</VendorDescription>
+    </AddIn>
+</RevitAddIns>

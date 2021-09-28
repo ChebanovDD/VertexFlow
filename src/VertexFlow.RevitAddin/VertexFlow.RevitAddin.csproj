@@ -13,7 +13,7 @@
         <FileAlignment>512</FileAlignment>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+        <PlatformTarget>x64</PlatformTarget>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
@@ -23,7 +23,7 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+        <PlatformTarget>x64</PlatformTarget>
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>bin\Release\</OutputPath>
@@ -32,13 +32,25 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="RevitAPI, Version=22.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>C:\Program Files\Autodesk\Revit 2022\RevitAPI.dll</HintPath>
+        </Reference>
+        <Reference Include="RevitAPIUI, Version=22.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>C:\Program Files\Autodesk\Revit 2022\RevitAPIUI.dll</HintPath>
+        </Reference>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="App.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="VertexFlow.addin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -48,5 +60,8 @@
     <Target Name="AfterBuild">
     </Target>
     -->
+    <Target Name="AfterBuild">
+        <Copy SourceFiles="$(OutputPath)VertexFlow.addin" DestinationFolder="C:\Users\ChebanovDD\AppData\Roaming\Autodesk\Revit\Addins\2022\" ContinueOnError="true" />
+    </Target>
 
 </Project>
