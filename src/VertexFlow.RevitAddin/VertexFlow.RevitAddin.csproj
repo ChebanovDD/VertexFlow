@@ -61,7 +61,12 @@
     </Target>
     -->
     <Target Name="AfterBuild">
-        <Copy SourceFiles="$(OutputPath)VertexFlow.addin" DestinationFolder="C:\Users\ChebanovDD\AppData\Roaming\Autodesk\Revit\Addins\2022\" ContinueOnError="true" />
+        <Copy 
+            SourceFiles="$(OutputPath)VertexFlow.addin" 
+            DestinationFolder="C:\Users\ChebanovDD\AppData\Roaming\Autodesk\Revit\Addins\2022\"
+            SkipUnchangedFiles="true"
+            ContinueOnError="true"
+        />
     </Target>
 
 </Project>
