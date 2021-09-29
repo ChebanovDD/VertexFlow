@@ -13,15 +13,15 @@ namespace VertexFlow.RevitAddin.Updaters
         public GeometryUpdater(AddInId addInId)
         {
             _updaterId = new UpdaterId(addInId, Guid.NewGuid());
-            RegisterUpdater();
+            RegisterUpdater(_updaterId);
         }
         
-        private void RegisterUpdater()
+        private void RegisterUpdater(UpdaterId updaterId)
         {
             UpdaterRegistry.RegisterUpdater(this, true);
-            UpdaterRegistry.AddTrigger(_updaterId, new ElementClassFilter(typeof(HostObject)),
+            UpdaterRegistry.AddTrigger(updaterId, new ElementClassFilter(typeof(HostObject)),
                 Element.GetChangeTypeGeometry());
-            UpdaterRegistry.AddTrigger(_updaterId, new ElementClassFilter(typeof(FamilyInstance)),
+            UpdaterRegistry.AddTrigger(updaterId, new ElementClassFilter(typeof(FamilyInstance)),
                 Element.GetChangeTypeGeometry());
         }
         
@@ -30,10 +30,10 @@ namespace VertexFlow.RevitAddin.Updaters
             Modified?.Invoke(data.GetDocument(), data.GetModifiedElementIds());
         }
         
-        private void UnregisterUpdater()
+        private void UnregisterUpdater(UpdaterId updaterId)
         {
-            UpdaterRegistry.RemoveAllTriggers(GetUpdaterId());
-            UpdaterRegistry.UnregisterUpdater(GetUpdaterId());
+            UpdaterRegistry.RemoveAllTriggers(updaterId);
+            UpdaterRegistry.UnregisterUpdater(updaterId);
         }
         
         public UpdaterId GetUpdaterId()
@@ -58,7 +58,7 @@ namespace VertexFlow.RevitAddin.Updaters
         
         public void Dispose()
         {
-            UnregisterUpdater();
+            UnregisterUpdater(_updaterId);
             _updaterId?.Dispose();
         }
     }
