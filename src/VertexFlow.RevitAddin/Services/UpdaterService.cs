@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
 using VertexFlow.RevitAddin.Interfaces;
 using VertexFlow.RevitAddin.Updaters;
@@ -9,50 +9,59 @@ namespace VertexFlow.RevitAddin.Services
 {
     public class UpdaterService : IAppService
     {
-        private IUpdater _geometryUpdater;
-        private readonly UIControlledApplication _application;
+        private ElementId[] _registeredElementIds;
+        private readonly GeometryService _geometryService;
+        private readonly List<IAppUpdater> _updaters = new List<IAppUpdater>();
         
-        public UpdaterService(UIControlledApplication application)
+        public UpdaterService(UIControlledApplication application, GeometryService geometryService)
         {
-            _application = application;
-            _application.ControlledApplication.DocumentChanged += OnDocumentChanged;
-            _application.ControlledApplication.ApplicationInitialized += OnApplicationInitialized;
+            _geometryService = geometryService;
+            AddUpdater(new DocumentUpdater(application));
+            AddUpdater(new GeometryUpdater(application.ActiveAddInId));
         }
         
-        private void OnApplicationInitialized(object sender, ApplicationInitializedEventArgs e)
+        public void SubscribeToElementsChanges(ICollection<ElementId> elementIds)
         {
-            _geometryUpdater = new GeometryUpdater(_application.ActiveAddInId);
-            RegisterUpdater(_geometryUpdater);
-        }
-        
-        private void OnDocumentChanged(object sender, DocumentChangedEventArgs e)
-        {
-            throw new NotImplementedException();
+            _registeredElementIds = elementIds.ToArray();
         }
         
         public void Dispose()
         {
-            _application.ControlledApplication.DocumentChanged -= OnDocumentChanged;
-            _application.ControlledApplication.ApplicationInitialized -= OnApplicationInitialized;
-            UnregisterUpdater(_geometryUpdater);
+            for (var i = _updaters.Count - 1; i >= 0; i--)
+            {
+                RemoveUpdater(i);
+            }
         }
         
-        private void RegisterUpdater(IUpdater updater)
+        private void AddUpdater(IAppUpdater updater)
         {
-            UpdaterRegistry.RegisterUpdater(updater, true);
-            AddTrigger(updater.GetUpdaterId(), typeof(HostObject));
-            AddTrigger(updater.GetUpdaterId(), typeof(FamilyInstance));
+            updater.Modified += OnModified;
+            _updaters.Add(updater);
+        }
+
+        private void OnModified(Document document, IEnumerable<ElementId> elementIds)
+        {
+            if (HasRegisteredElements())
+            {
+                _geometryService.UpdateElements(document, GetRegisteredIds(elementIds));
+            }
         }
         
-        private void AddTrigger(UpdaterId updaterId, Type type)
+        private bool HasRegisteredElements()
         {
-            UpdaterRegistry.AddTrigger(updaterId, new ElementClassFilter(type), Element.GetChangeTypeGeometry());
+            return _registeredElementIds != null && _registeredElementIds.Length != 0;
         }
         
-        private void UnregisterUpdater(IUpdater updater)
+        private IEnumerable<ElementId> GetRegisteredIds(IEnumerable<ElementId> elementIds)
         {
-            UpdaterRegistry.RemoveAllTriggers(updater.GetUpdaterId());
-            UpdaterRegistry.UnregisterUpdater(updater.GetUpdaterId());
+            return elementIds.Where(elementId => _registeredElementIds.Contains(elementId));
+        }
+        
+        private void RemoveUpdater(int index)
+        {
+            _updaters[index].Modified -= OnModified;
+            _updaters[index].Dispose();
+            _updaters.RemoveAt(index);
         }
     }
 }

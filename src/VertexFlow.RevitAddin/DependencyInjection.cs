@@ -20,7 +20,7 @@ namespace VertexFlow.RevitAddin
             var builder = new ContainerBuilder();
             
             builder.RegisterType<UpdaterService>().SingleInstance();
-            builder.RegisterType<GeometryExporter>().SingleInstance();
+            builder.RegisterType<GeometryService>().SingleInstance();
             builder.RegisterInstance<UIControlledApplication>(application).SingleInstance();
             
             return builder.Build();
