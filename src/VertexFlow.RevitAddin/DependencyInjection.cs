@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.UI;
 using Autofac;
 using VertexFlow.RevitAddin.Interfaces;
+using VertexFlow.RevitAddin.Interfaces.Services;
 using VertexFlow.RevitAddin.RibbonPanels;
 using VertexFlow.RevitAddin.Services;
 
@@ -19,8 +20,8 @@ namespace VertexFlow.RevitAddin
         {
             var builder = new ContainerBuilder();
             
-            builder.RegisterType<UpdaterService>().SingleInstance();
-            builder.RegisterType<GeometryService>().SingleInstance();
+            builder.RegisterType<UpdaterService>().As<IUpdaterService>().SingleInstance();
+            builder.RegisterType<GeometryService>().As<IGeometryService>().SingleInstance();
             builder.RegisterInstance<UIControlledApplication>(application).SingleInstance();
             
             return builder.Build();

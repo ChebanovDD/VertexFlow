@@ -4,7 +4,7 @@ using VertexFlow.RevitAddin.Interfaces;
 
 namespace VertexFlow.RevitAddin.Commands
 {
-    public abstract class AppCommand<TService> : IAppCommand, IExternalCommand where TService : IAppService
+    public abstract class AppCommand<TService> : IAppCommand, IExternalCommand
     {
         public abstract string Cmd { get; }
         public abstract string Name { get; }

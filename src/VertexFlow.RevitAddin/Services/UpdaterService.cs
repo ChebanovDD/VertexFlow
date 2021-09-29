@@ -3,24 +3,25 @@ using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using VertexFlow.RevitAddin.Interfaces;
+using VertexFlow.RevitAddin.Interfaces.Services;
 using VertexFlow.RevitAddin.Updaters;
 
 namespace VertexFlow.RevitAddin.Services
 {
-    public class UpdaterService : IAppService
+    public class UpdaterService : IUpdaterService
     {
         private ElementId[] _registeredElementIds;
-        private readonly GeometryService _geometryService;
+        private readonly IGeometryService _geometryService;
         private readonly List<IAppUpdater> _updaters = new List<IAppUpdater>();
         
-        public UpdaterService(UIControlledApplication application, GeometryService geometryService)
+        public UpdaterService(UIControlledApplication application, IGeometryService geometryService)
         {
             _geometryService = geometryService;
             AddUpdater(new DocumentUpdater(application));
             AddUpdater(new GeometryUpdater(application.ActiveAddInId));
         }
         
-        public void SubscribeToElementsChanges(ICollection<ElementId> elementIds)
+        public void SubscribeToElementsChanges(IEnumerable<ElementId> elementIds)
         {
             _registeredElementIds = elementIds.ToArray();
         }
