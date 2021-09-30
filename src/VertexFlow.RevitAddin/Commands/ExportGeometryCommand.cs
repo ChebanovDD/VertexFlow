@@ -16,7 +16,7 @@ namespace VertexFlow.RevitAddin.Commands
             var uiDoc = commandData.Application.ActiveUIDocument;
             var elementIds = uiDoc.Selection.GetElementIds();
             
-            geometryService.ExportSelectedElements(uiDoc.Document, elementIds);
+            geometryService.ExportElements(uiDoc.Document, elementIds);
         }
     }
 }

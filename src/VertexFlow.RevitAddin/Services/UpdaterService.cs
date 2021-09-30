@@ -39,7 +39,7 @@ namespace VertexFlow.RevitAddin.Services
             updater.Modified += OnModified;
             _updaters.Add(updater);
         }
-
+        
         private void OnModified(Document document, IEnumerable<ElementId> elementIds)
         {
             if (HasRegisteredElements())

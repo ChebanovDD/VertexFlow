@@ -13,7 +13,7 @@ namespace VertexFlow.RevitAddin.RibbonPanels
         }
         
         protected abstract void OnBuild(RibbonPanel ribbonPanel);
-        
+
         protected ButtonData CreatePushButton<TCommand>() where TCommand : IAppCommand, new()
         {
             var command = new TCommand();

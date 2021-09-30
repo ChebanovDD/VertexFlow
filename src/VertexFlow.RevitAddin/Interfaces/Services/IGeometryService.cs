@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 namespace VertexFlow.RevitAddin.Interfaces.Services
 {
-    public interface IGeometryService
+    public interface IGeometryService : IDisposable
     {
-        void ExportSelectedElements(Document document, IEnumerable<ElementId> elementIds);
+        void ExportElements(Document document, IEnumerable<ElementId> elementIds);
         void UpdateElements(Document document, IEnumerable<ElementId> elementIds);
     }
 }

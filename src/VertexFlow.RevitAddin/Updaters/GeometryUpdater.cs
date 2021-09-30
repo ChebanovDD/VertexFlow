@@ -48,7 +48,7 @@ namespace VertexFlow.RevitAddin.Updaters
         
         public string GetUpdaterName()
         {
-            return "NormsUpdater";
+            return "GeometryUpdater";
         }
         
         public string GetAdditionalInformation()
