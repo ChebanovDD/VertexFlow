@@ -10,7 +10,7 @@ namespace VertexFlow.RevitAddin.Services
 {
     public class UpdaterService : IUpdaterService
     {
-        private ElementId[] _registeredElementIds;
+        private IEnumerable<ElementId> _registeredElementIds;
         private readonly IGeometryService _geometryService;
         private readonly List<IAppUpdater> _updaters = new List<IAppUpdater>();
         
@@ -23,7 +23,7 @@ namespace VertexFlow.RevitAddin.Services
         
         public void SubscribeToElementsChanges(IEnumerable<ElementId> elementIds)
         {
-            _registeredElementIds = elementIds.ToArray();
+            _registeredElementIds = elementIds;
         }
         
         public void Dispose()
@@ -50,7 +50,7 @@ namespace VertexFlow.RevitAddin.Services
         
         private bool HasRegisteredElements()
         {
-            return _registeredElementIds != null && _registeredElementIds.Length != 0;
+            return _registeredElementIds != null && _registeredElementIds.Any();
         }
         
         private IEnumerable<ElementId> GetRegisteredIds(IEnumerable<ElementId> elementIds)
