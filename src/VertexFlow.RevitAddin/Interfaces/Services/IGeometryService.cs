@@ -6,7 +6,9 @@ namespace VertexFlow.RevitAddin.Interfaces.Services
 {
     public interface IGeometryService : IDisposable
     {
-        void ExportElements(Document document, IEnumerable<ElementId> elementIds);
-        void UpdateElements(Document document, IEnumerable<ElementId> elementIds);
+        void ExportElement(Element element);
+        void UpdateElement(Element element);
+        void ExportElements(IEnumerable<Element> elements);
+        void UpdateElements(IEnumerable<Element> elements);
     }
 }

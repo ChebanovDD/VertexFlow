@@ -2,6 +2,7 @@
 using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using VertexFlow.RevitAddin.Extensions;
 using VertexFlow.RevitAddin.Interfaces;
 using VertexFlow.RevitAddin.Interfaces.Services;
 using VertexFlow.RevitAddin.Updaters;
@@ -10,7 +11,7 @@ namespace VertexFlow.RevitAddin.Services
 {
     public class UpdaterService : IUpdaterService
     {
-        private IEnumerable<ElementId> _registeredElementIds;
+        private ICollection<ElementId> _registeredElementIds;
         private readonly IGeometryService _geometryService;
         private readonly List<IAppUpdater> _updaters = new List<IAppUpdater>();
         
@@ -21,7 +22,7 @@ namespace VertexFlow.RevitAddin.Services
             AddUpdater(new GeometryUpdater(application.ActiveAddInId));
         }
         
-        public void SubscribeToElementsChanges(IEnumerable<ElementId> elementIds)
+        public void SubscribeToElementsChanges(ICollection<ElementId> elementIds)
         {
             _registeredElementIds = elementIds;
         }
@@ -39,23 +40,28 @@ namespace VertexFlow.RevitAddin.Services
             updater.Modified += OnModified;
             _updaters.Add(updater);
         }
-        
-        private void OnModified(Document document, IEnumerable<ElementId> elementIds)
+
+        private void OnModified(Document document, ICollection<ElementId> elementIds)
         {
-            if (HasRegisteredElements())
+            if (_registeredElementIds == null || _registeredElementIds.Count == 0)
             {
-                _geometryService.UpdateElements(document, GetRegisteredIds(elementIds));
+                return;
             }
-        }
-        
-        private bool HasRegisteredElements()
-        {
-            return _registeredElementIds != null && _registeredElementIds.Any();
-        }
-        
-        private IEnumerable<ElementId> GetRegisteredIds(IEnumerable<ElementId> elementIds)
-        {
-            return elementIds.Where(elementId => _registeredElementIds.Contains(elementId));
+            
+            var elements = document.GetIntersectElements(elementIds, _registeredElementIds).ToList();
+            if (elements.Count == 0)
+            {
+                return;
+            }
+            
+            if (elements.Count == 1)
+            {
+                _geometryService.UpdateElement(elements[0]);
+            }
+            else
+            {
+                _geometryService.UpdateElements(elements);
+            }
         }
         
         private void RemoveUpdater(int index)

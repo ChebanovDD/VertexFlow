@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Autodesk.Revit.DB;
 using VertexFlow.RevitAddin.Extensions;
-using VertexFlow.RevitAddin.Interfaces;
 using VertexFlow.RevitAddin.Interfaces.Exporter;
 using VertexFlow.RevitAddin.Interfaces.Services;
 
@@ -17,14 +16,24 @@ namespace VertexFlow.RevitAddin.Services
             _geometryExporter = geometryExporter;
         }
         
-        public void ExportElements(Document document, IEnumerable<ElementId> elementIds)
+        public void ExportElement(Element element)
         {
-            SendOrUpdateElements(document, elementIds).Forget(false);
+            SendOrUpdateElement(element).Forget(false);
+        }
+
+        public void UpdateElement(Element element)
+        {
+            SendOrUpdateElement(element).Forget(false);
+        }
+
+        public void ExportElements(IEnumerable<Element> elements)
+        {
+            SendOrUpdateElements(elements).Forget(false);
         }
         
-        public void UpdateElements(Document document, IEnumerable<ElementId> elementIds)
+        public void UpdateElements(IEnumerable<Element> elements)
         {
-            SendOrUpdateElements(document, elementIds).Forget(false);
+            SendOrUpdateElements(elements).Forget(false);
         }
         
         public void Dispose()
@@ -32,13 +41,18 @@ namespace VertexFlow.RevitAddin.Services
             _geometryExporter?.Dispose();
         }
         
-        private async Task SendOrUpdateElements(Document document, IEnumerable<ElementId> elementIds)
+        private async Task SendOrUpdateElement(Element element)
+        {
+            await SendOrUpdateElementAsync(element).ConfigureAwait(false);
+        }
+        
+        private async Task SendOrUpdateElements(IEnumerable<Element> elements)
         {
             var tasks = new List<Task>();
             
-            foreach (var elementId in elementIds)
+            foreach (var element in elements)
             {
-                tasks.Add(SendOrUpdateElementAsync(document.GetElement(elementId)));
+                tasks.Add(SendOrUpdateElementAsync(element));
             }
             
             await Task.WhenAll(tasks).ConfigureAwait(false);

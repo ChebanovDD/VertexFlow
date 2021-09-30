@@ -93,6 +93,7 @@
         <Compile Include="Exporter\NormalDistributors\NormalDistributor.cs" />
         <Compile Include="Exporter\NormalDistributors\OnEachFacetNormalDistributor.cs" />
         <Compile Include="Exporter\NormalDistributors\OnePerFaceNormalDistributor.cs" />
+        <Compile Include="Extensions\DocumentExtensions.cs" />
         <Compile Include="Extensions\TaskExtensions.cs" />
         <Compile Include="Extensions\VertexExtensions.cs" />
         <Compile Include="Interfaces\Exporter\IGeometryExporter.cs" />
@@ -101,11 +102,13 @@
         <Compile Include="Interfaces\IAppCommand.cs" />
         <Compile Include="Interfaces\IAppUpdater.cs" />
         <Compile Include="Interfaces\IRibbonPanel.cs" />
+        <Compile Include="Interfaces\Services\ICommandService.cs" />
         <Compile Include="Interfaces\Services\IGeometryService.cs" />
         <Compile Include="Interfaces\Services\IUpdaterService.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="RibbonPanels\ExternalRibbonPanel.cs" />
         <Compile Include="RibbonPanels\VertexFlowRibbonPanel.cs" />
+        <Compile Include="Services\CommandService.cs" />
         <Compile Include="Services\GeometryService.cs" />
         <Compile Include="Services\UpdaterService.cs" />
         <Compile Include="Updaters\DocumentUpdater.cs" />

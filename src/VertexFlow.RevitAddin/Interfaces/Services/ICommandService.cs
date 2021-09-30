@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 namespace VertexFlow.RevitAddin.Interfaces.Services
 {
-    public interface IUpdaterService : IDisposable
+    public interface ICommandService
     {
+        void ExportElements(Document document, ICollection<ElementId> elementIds);
         void SubscribeToElementsChanges(ICollection<ElementId> elementIds);
     }
 }
