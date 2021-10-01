@@ -11,7 +11,7 @@ namespace VertexFlow.RevitAddin.Exporter
     {
         private readonly XYZ _flipX;
         private readonly Dictionary<DistributionOfNormals, INormalDistributor> _normalDistributors;
-
+        
         public MeshDataConstructor()
         {
             _flipX = new XYZ(-1, 1, 1);
@@ -19,7 +19,6 @@ namespace VertexFlow.RevitAddin.Exporter
             _normalDistributors = new Dictionary<DistributionOfNormals, INormalDistributor>
             {
                 { DistributionOfNormals.AtEachPoint, new AtEachPointNormalDistributor() },
-                { DistributionOfNormals.OnEachFacet, new OnEachFacetNormalDistributor() },
                 { DistributionOfNormals.OnePerFace, new OnePerFaceNormalDistributor() }
             };
         }
@@ -28,12 +27,20 @@ namespace VertexFlow.RevitAddin.Exporter
         {
             var triangleIndexOffset = 0;
             var meshData = new RevitMesh($"{elementId}");
-
+            
             for (var i = 0; i < meshes.Count; i++)
             {
                 var mesh = meshes[i];
                 
-                AddVertices(meshData, mesh);
+                if (HasNormalDistributor(mesh, out var normalDistributor))
+                {
+                    AddVerticesAndNormals(meshData, mesh, normalDistributor);
+                }
+                else
+                {
+                    AddVertices(meshData, mesh);
+                }
+                
                 AddTriangles(meshData, mesh, triangleIndexOffset);
                 
                 triangleIndexOffset += mesh.Vertices.Count;
@@ -41,26 +48,35 @@ namespace VertexFlow.RevitAddin.Exporter
             
             return meshData;
         }
-
+        
+        private bool HasNormalDistributor(Mesh mesh, out INormalDistributor normalDistributor)
+        {
+            return _normalDistributors.TryGetValue(mesh.DistributionOfNormals, out normalDistributor);
+        }
+        
         private void AddVertices(RevitMesh meshData, Mesh mesh)
         {
-            var normalDistributor = _normalDistributors[mesh.DistributionOfNormals];
+            var verticesCount = mesh.Vertices.Count;
+            for (var i = 0; i < verticesCount; i++)
+            {
+                meshData.Vertices.Add(mesh.Vertices[i].Scale(_flipX));
+            }
+        }
+        
+        private void AddVerticesAndNormals(RevitMesh meshData, Mesh mesh, INormalDistributor normalDistributor)
+        {
             normalDistributor.Configure(mesh, _flipX);
             
             var verticesCount = mesh.Vertices.Count;
             for (var i = 0; i < verticesCount; i++)
             {
+                meshData.Normals.Add(normalDistributor.GetNormal(i));
                 meshData.Vertices.Add(mesh.Vertices[i].Scale(_flipX));
-                
-                if (normalDistributor.DistributionOfNormals != DistributionOfNormals.OnEachFacet)
-                {
-                    meshData.Normals.Add(normalDistributor.GetNormal(i));
-                }
             }
             
             normalDistributor.Reset();
         }
-
+        
         private void AddTriangles(RevitMesh meshData, Mesh mesh, int triangleIndexOffset)
         {
             var trianglesCount = mesh.NumTriangles;
