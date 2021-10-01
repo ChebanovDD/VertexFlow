@@ -9,6 +9,7 @@ using VertexFlow.WebApplication.Interfaces.Services;
 namespace VertexFlow.WebAPI.Controllers
 {
     [ApiController]
+    [ApiVersion("1.0")]
     [Route("api/[controller]")]
     public class MeshesController : ControllerBase
     {
@@ -42,8 +43,6 @@ namespace VertexFlow.WebAPI.Controllers
             {
                 yield return _mapper.ToResponse(mesh);
             }
-
-            // return _meshService.GetAllAsync();
         }
 
         [HttpPut("{meshId}")]

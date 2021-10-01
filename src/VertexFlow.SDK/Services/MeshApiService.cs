@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using VertexFlow.SDK.Extensions;
 using VertexFlow.SDK.Interfaces;
@@ -13,9 +14,10 @@ namespace VertexFlow.SDK.Services
 
         public string BaseAddress => _httpClient.BaseAddress?.OriginalString;
 
-        public MeshApiService(HttpClient httpClient)
+        public MeshApiService(string server, string version)
         {
-            _httpClient = httpClient;
+            _httpClient = new HttpClient{BaseAddress = new Uri(server)};
+            _httpClient.DefaultRequestHeaders.Add("version", version);
         }
 
         public async Task Create<TRequest>(TRequest meshRequest)
