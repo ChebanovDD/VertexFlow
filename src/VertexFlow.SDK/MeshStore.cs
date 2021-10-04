@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using VertexFlow.SDK.Interfaces;
 
 namespace VertexFlow.SDK
@@ -11,20 +12,20 @@ namespace VertexFlow.SDK
         {
             _meshApi = meshApi;
         }
-        
-        public async Task<TMeshData> GetAsync(string meshId)
+
+        public async Task<TMeshData> GetAsync(string meshId, CancellationToken cancellationToken = default)
         {
-            return await _meshApi.GetAsync<TMeshData>(meshId).ConfigureAwait(false);
+            return await _meshApi.GetAsync<TMeshData>(meshId, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<TMeshData[]> GetAllAsync()
         {
-            return await _meshApi.GetAllAsync<TMeshData>().ConfigureAwait(false);
+            return await _meshApi.GetAllAsync<TMeshData>(CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task DeleteAsync(string meshId)
+        public async Task DeleteAsync(string meshId, CancellationToken cancellationToken = default)
         {
-            await _meshApi.DeleteAsync(meshId).ConfigureAwait(false);
+            await _meshApi.DeleteAsync(meshId, cancellationToken).ConfigureAwait(false);
         }
     }
 }

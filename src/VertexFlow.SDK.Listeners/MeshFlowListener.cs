@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using VertexFlow.SDK.Listeners.Interfaces;
@@ -27,7 +28,7 @@ namespace VertexFlow.SDK.Listeners
             _disposables.Add(meshUpdatedConnection);
         }
 
-        public async Task<IMeshFlowListener> StartAsync(Action<Exception> onException = null)
+        public async Task<IMeshFlowListener> StartAsync(Action<Exception> onException = null, CancellationToken cancellationToken = default)
         {
             if (_hubConnection.State != HubConnectionState.Disconnected)
             {
@@ -36,7 +37,7 @@ namespace VertexFlow.SDK.Listeners
 
             try
             {
-                await _hubConnection.StartAsync().ConfigureAwait(false);
+                await _hubConnection.StartAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (Exception exception) when (onException != null)
             {
@@ -46,11 +47,11 @@ namespace VertexFlow.SDK.Listeners
             return this;
         }
 
-        public async Task<IMeshFlowListener> StopAsync()
+        public async Task<IMeshFlowListener> StopAsync(CancellationToken cancellationToken = default)
         {
             if (_hubConnection.State == HubConnectionState.Connected)
             {
-                await _hubConnection.StopAsync().ConfigureAwait(false);
+                await _hubConnection.StopAsync(cancellationToken).ConfigureAwait(false);
             }
 
             return this;

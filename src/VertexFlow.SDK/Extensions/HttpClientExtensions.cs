@@ -10,14 +10,16 @@ namespace VertexFlow.SDK.Extensions
     {
         private const string JsonMediaType = "application/json";
 
-        public static async Task PostAsJsonAsync<T>(this HttpClient client, string requestUri, T data)
+        public static async Task PostAsJsonAsync<T>(this HttpClient client, string requestUri, T data,
+            CancellationToken cancellationToken)
         {
-            await client.PostAsync(requestUri, GetStringContent(data)).ConfigureAwait(false);
+            await client.PostAsync(requestUri, GetStringContent(data), cancellationToken).ConfigureAwait(false);
         }
 
-        public static async Task<T> GetAsObjectAsync<T>(this HttpClient client, string requestUri)
+        public static async Task<T> GetAsObjectAsync<T>(this HttpClient client, string requestUri,
+            CancellationToken cancellationToken)
         {
-            var response = await client.GetAsync(requestUri, CancellationToken.None).ConfigureAwait(false);
+            var response = await client.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
             if (response.IsSuccessStatusCode == false)
             {
                 return default;
@@ -27,9 +29,10 @@ namespace VertexFlow.SDK.Extensions
             return data == null ? default : JsonConvert.DeserializeObject<T>(data);
         }
 
-        public static async Task PutAsJsonAsync<T>(this HttpClient client, string requestUri, T data)
+        public static async Task PutAsJsonAsync<T>(this HttpClient client, string requestUri, T data,
+            CancellationToken cancellationToken)
         {
-            await client.PutAsync(requestUri, GetStringContent(data)).ConfigureAwait(false);
+            await client.PutAsync(requestUri, GetStringContent(data), cancellationToken).ConfigureAwait(false);
         }
 
         private static StringContent GetStringContent<T>(T data)

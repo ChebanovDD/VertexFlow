@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using VertexFlow.SDK.Extensions.Extensions;
 using VertexFlow.SDK.Extensions.Interfaces;
@@ -20,7 +21,7 @@ namespace VertexFlow.SDK.Extensions
             add => _meshFlowListener.MeshCreated += value;
             remove => _meshFlowListener.MeshCreated -= value;
         }
-        
+
         public event EventHandler<string> MeshUpdated
         {
             add => _meshFlowListener.MeshUpdated += value;
@@ -35,9 +36,10 @@ namespace VertexFlow.SDK.Extensions
             _meshFlowListener.MeshUpdated += OnMeshUpdated;
         }
 
-        public async Task<IMeshFlowListener> StartAsync(Action<Exception> onException = null)
+        public async Task<IMeshFlowListener> StartAsync(Action<Exception> onException = null,
+            CancellationToken cancellationToken = default)
         {
-            return await _meshFlowListener.StartAsync(onException).ConfigureAwait(false);
+            return await _meshFlowListener.StartAsync(onException, cancellationToken).ConfigureAwait(false);
         }
 
         public IMeshFlowListenerDecorator<TMeshData> OnMeshCreated(Action<TMeshData> action)
@@ -45,7 +47,7 @@ namespace VertexFlow.SDK.Extensions
             _onMeshCreated = action;
             return this;
         }
-        
+
         public IMeshFlowListenerDecorator<TMeshData> OnMeshUpdated(Action<TMeshData> action)
         {
             _onMeshUpdated = action;
@@ -58,9 +60,9 @@ namespace VertexFlow.SDK.Extensions
             return this;
         }
 
-        public async Task<IMeshFlowListener> StopAsync()
+        public async Task<IMeshFlowListener> StopAsync(CancellationToken cancellationToken = default)
         {
-            return await _meshFlowListener.StopAsync().ConfigureAwait(false);
+            return await _meshFlowListener.StopAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public void Dispose()
