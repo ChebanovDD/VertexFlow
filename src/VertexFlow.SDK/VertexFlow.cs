@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net.Http;
 using VertexFlow.Contracts.Responses;
+using VertexFlow.SDK.Extensions;
 using VertexFlow.SDK.Interfaces;
-using VertexFlow.SDK.Services;
+using VertexFlow.SDK.Internal;
+using VertexFlow.SDK.Internal.Services;
 
 namespace VertexFlow.SDK
 {
@@ -13,7 +16,10 @@ namespace VertexFlow.SDK
 
         public VertexFlow(string server, string version = "1.0")
         {
-            _meshesApi = new MeshApiService(server, version);
+            _meshesApi =
+                new MeshApiService(
+                    new HttpStreamClient(
+                        new HttpClient { BaseAddress = new Uri(server) }.AddHeader("version", version)));
         }
 
         public IMeshFlow<MeshResponse> CreateMeshFlow()

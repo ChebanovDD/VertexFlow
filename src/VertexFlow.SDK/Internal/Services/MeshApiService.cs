@@ -1,24 +1,20 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using VertexFlow.SDK.Extensions;
 using VertexFlow.SDK.Interfaces;
 
-namespace VertexFlow.SDK.Services
+namespace VertexFlow.SDK.Internal.Services
 {
     internal class MeshApiService : IMeshApi
     {
         private const string MeshesUri = "api/meshes";
 
-        private readonly HttpClient _httpClient;
-
-        public string BaseAddress => _httpClient.BaseAddress?.OriginalString;
-
-        public MeshApiService(string server, string version)
+        private readonly IHttpClient _httpClient;
+        
+        public string BaseAddress => _httpClient.BaseAddress;
+        
+        public MeshApiService(IHttpClient httpClient)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri(server) };
-            _httpClient.DefaultRequestHeaders.Add("version", version);
+            _httpClient = httpClient;
         }
 
         public async Task Create<TRequest>(TRequest meshRequest, CancellationToken cancellationToken)
