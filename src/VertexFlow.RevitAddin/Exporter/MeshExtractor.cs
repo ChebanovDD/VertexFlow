@@ -5,17 +5,19 @@ namespace VertexFlow.RevitAddin.Exporter
 {
     public class MeshExtractor
     {
+        private readonly Transform _transform;
         private readonly Options _geometryOptions;
 
         public MeshExtractor()
         {
+            _transform = Transform.Identity;
             _geometryOptions = new Options();
         }
 
         public List<Mesh> GetMeshes(Element element)
         {
             var meshes = new List<Mesh>();
-            var geometryElement = element.get_Geometry(_geometryOptions);
+            var geometryElement = GetGeometryElement(element);
 
             foreach (var geometry in geometryElement)
             {
@@ -32,6 +34,11 @@ namespace VertexFlow.RevitAddin.Exporter
             }
 
             return meshes;
+        }
+
+        private GeometryElement GetGeometryElement(Element element)
+        {
+            return element.get_Geometry(_geometryOptions).GetTransformed(_transform);
         }
 
         private bool IsSolid(GeometryObject geometry, out Solid solid)
