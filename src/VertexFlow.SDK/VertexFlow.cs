@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net.Http;
 using VertexFlow.Contracts.Responses;
-using VertexFlow.SDK.Extensions;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Internal;
+using VertexFlow.SDK.Internal.Interfaces;
+using VertexFlow.SDK.Internal.Serializers;
 using VertexFlow.SDK.Internal.Services;
 
 namespace VertexFlow.SDK
@@ -13,13 +14,15 @@ namespace VertexFlow.SDK
         private readonly IMeshApi _meshesApi;
         
         public string Server => _meshesApi.BaseAddress;
-
-        public VertexFlow(string server, string version = "1.0")
+        
+        public VertexFlow(string server, string version = "1.0", IJsonSerializer jsonSerializer = null)
         {
-            _meshesApi =
-                new MeshApiService(
-                    new HttpStreamClient(
-                        new HttpClient { BaseAddress = new Uri(server) }.AddHeader("version", version)));
+            _meshesApi = new MeshApiService(new HttpClientFacade(config =>
+            {
+                config.HttpClient = new HttpClient { BaseAddress = new Uri(server) };
+                config.HttpClient.DefaultRequestHeaders.Add("version", version);
+                config.JsonSerializer = jsonSerializer ?? new NewtonsoftJsonSerializer();
+            }));
         }
 
         public IMeshFlow<MeshResponse> CreateMeshFlow()

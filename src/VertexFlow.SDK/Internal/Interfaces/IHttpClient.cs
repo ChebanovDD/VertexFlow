@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace VertexFlow.SDK.Interfaces
+namespace VertexFlow.SDK.Internal.Interfaces
 {
     internal interface IHttpClient : IDisposable
     {

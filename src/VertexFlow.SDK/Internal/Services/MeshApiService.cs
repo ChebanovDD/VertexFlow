@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using VertexFlow.SDK.Interfaces;
+using VertexFlow.SDK.Internal.Interfaces;
 
 namespace VertexFlow.SDK.Internal.Services
 {
