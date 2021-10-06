@@ -44,10 +44,5 @@ namespace VertexFlow.SDK.Internal.Services
         {
             await _httpClient.DeleteAsync($"{MeshesUri}/{meshId}", cancellationToken).ConfigureAwait(false);
         }
-
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
-        }
     }
 }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace VertexFlow.SDK.Internal.Interfaces
 {
-    internal interface IMeshApi : IDisposable
+    internal interface IMeshApi
     {
         string BaseAddress { get; }
         

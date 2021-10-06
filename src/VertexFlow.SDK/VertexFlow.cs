@@ -1,53 +1,44 @@
 ﻿using System;
 using System.Net.Http;
-using VertexFlow.Contracts.Responses;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Internal;
 using VertexFlow.SDK.Internal.Interfaces;
-using VertexFlow.SDK.Internal.Serializers;
-using VertexFlow.SDK.Internal.Services;
 
 namespace VertexFlow.SDK
 {
     public class VertexFlow : IDisposable
     {
-        private readonly IMeshApi _meshesApi;
+        private readonly HttpClient _httpClient;
+        private readonly MeshApiProvider _meshApiProvider;
         
-        public string Server => _meshesApi.BaseAddress;
+        public string Server => _httpClient?.BaseAddress.OriginalString;
         
-        public VertexFlow(string server, string version = "1.0", IJsonSerializer jsonSerializer = null)
+        public VertexFlow(string server, string version = "1.0")
         {
-            _meshesApi = new MeshApiService(new HttpClientFacade(config =>
-            {
-                config.HttpClient = new HttpClient { BaseAddress = new Uri(server) };
-                config.HttpClient.DefaultRequestHeaders.Add("version", version);
-                config.JsonSerializer = jsonSerializer ?? new NewtonsoftJsonSerializer();
-            }));
-        }
-
-        public IMeshFlow<MeshResponse> CreateMeshFlow()
-        {
-            return new MeshFlow<MeshResponse>(_meshesApi);
+            _httpClient = new HttpClient { BaseAddress = new Uri(server) };
+            _httpClient.DefaultRequestHeaders.Add("version", version);
+            _meshApiProvider = new MeshApiProvider();
         }
         
-        public IMeshFlow<TMeshData> CreateMeshFlow<TMeshData>()
+        public IMeshFlow<TMeshData> CreateMeshFlow<TMeshData>(IJsonSerializer jsonSerializer = null)
         {
-            return new MeshFlow<TMeshData>(_meshesApi);
+            return new MeshFlow<TMeshData>(GetMeshApi(jsonSerializer));
         }
         
-        public IMeshStore<MeshResponse> CreateMeshStore()
+        public IMeshStore<TMeshData> CreateMeshStore<TMeshData>(IJsonSerializer jsonSerializer = null)
         {
-            return new MeshStore<MeshResponse>(_meshesApi);
-        }
-        
-        public IMeshStore<TMeshData> CreateMeshStore<TMeshData>()
-        {
-            return new MeshStore<TMeshData>(_meshesApi);
+            return new MeshStore<TMeshData>(GetMeshApi(jsonSerializer));
         }
         
         public void Dispose()
         {
-            _meshesApi?.Dispose();
+            _httpClient?.Dispose();
+            _meshApiProvider?.Dispose();
+        }
+        
+        private IMeshApi GetMeshApi(IJsonSerializer jsonSerializer)
+        {
+            return _meshApiProvider.GetMeshApi(_httpClient, jsonSerializer);
         }
     }
 }

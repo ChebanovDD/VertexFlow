@@ -59,11 +59,6 @@ namespace VertexFlow.SDK.Internal
             }
         }
 
-        public void Dispose()
-        {
-            _httpClient.Dispose();
-        }
-
         private async Task SendAsJsonAsync<T>(HttpRequestMessage request, T data, CancellationToken cancellationToken)
         {
             using (var httpContent = await _jsonSerializer.SerializeAsync(data, cancellationToken))

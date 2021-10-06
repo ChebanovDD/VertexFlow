@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Internal.Interfaces;
 
-namespace VertexFlow.SDK
+namespace VertexFlow.SDK.Internal
 {
     internal class MeshStore<TMeshData> : IMeshStore<TMeshData>
     {

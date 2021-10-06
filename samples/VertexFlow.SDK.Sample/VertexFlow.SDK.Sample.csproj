@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\VertexFlow.Contracts\VertexFlow.Contracts.csproj" />
       <ProjectReference Include="..\..\src\VertexFlow.SDK.Extensions\VertexFlow.SDK.Extensions.csproj" />
       <ProjectReference Include="..\..\src\VertexFlow.SDK.Listeners\VertexFlow.SDK.Listeners.csproj" />
       <ProjectReference Include="..\..\src\VertexFlow.SDK\VertexFlow.SDK.csproj" />
