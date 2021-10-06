@@ -24,6 +24,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.SDK.Listeners", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.SDK.Extensions", "src\VertexFlow.SDK.Extensions\VertexFlow.SDK.Extensions.csproj", "{412AB226-FFA8-48E4-998E-80C5B4C27FE0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{69CF5A9D-03FF-4918-9EF2-78D7A0691E22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexFlow.SDK.Benchmark", "benchmarks\VertexFlow.SDK.Benchmark\VertexFlow.SDK.Benchmark.csproj", "{96D089A5-E687-46C2-B26A-4F05B1BED42B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,7 @@ Global
 		{7C284764-3D2E-4104-83B6-88ABBD406201} = {727E32D7-D90E-4285-BBAC-B391B2AD5A8E}
 		{1B158941-CDDF-44CC-BF40-DB486C28B42C} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
 		{412AB226-FFA8-48E4-998E-80C5B4C27FE0} = {DD31A7D2-C773-4D1C-A9B1-85BFD1DD7F6F}
+		{96D089A5-E687-46C2-B26A-4F05B1BED42B} = {69CF5A9D-03FF-4918-9EF2-78D7A0691E22}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D587A043-4F58-4EC1-A380-4E05E448307D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -82,5 +87,9 @@ Global
 		{412AB226-FFA8-48E4-998E-80C5B4C27FE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{412AB226-FFA8-48E4-998E-80C5B4C27FE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{412AB226-FFA8-48E4-998E-80C5B4C27FE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96D089A5-E687-46C2-B26A-4F05B1BED42B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96D089A5-E687-46C2-B26A-4F05B1BED42B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96D089A5-E687-46C2-B26A-4F05B1BED42B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96D089A5-E687-46C2-B26A-4F05B1BED42B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
