@@ -2,6 +2,9 @@
 
 namespace VertexFlow.SDK.Listeners
 {
+    /// <summary>
+    /// Provides additional methods that extend the <see cref="VertexFlow"/> functionality.
+    /// </summary>
     public static class VertexFlowExtensions
     {
         /// <summary>

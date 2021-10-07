@@ -6,14 +6,25 @@ using VertexFlow.SDK.Internal.Interfaces;
 
 namespace VertexFlow.SDK
 {
+    /// <summary>
+    /// Provides methods to create <see cref="IMeshFlow{TMeshData}"/> and <see cref="IMeshStore{TMeshData}"/>.
+    /// </summary>
     public class VertexFlow : IDisposable
     {
         private bool _isDisposed;
         private readonly HttpClient _httpClient;
         private readonly MeshApiProvider _meshApiProvider;
         
+        /// <summary>
+        /// Gets the server base address (URI) used when sending requests.
+        /// </summary>
         public string Server => _httpClient?.BaseAddress.OriginalString;
         
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VertexFlow"/>.
+        /// </summary>
+        /// <param name="server">Server base address.</param>
+        /// <param name="version">(Optional) Server version. The default value is "1.0".</param>
         public VertexFlow(string server, string version = "1.0")
         {
             _httpClient = new HttpClient { BaseAddress = new Uri(server) };

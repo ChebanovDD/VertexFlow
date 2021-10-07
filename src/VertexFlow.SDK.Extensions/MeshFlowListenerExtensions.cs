@@ -4,6 +4,9 @@ using VertexFlow.SDK.Listeners.Interfaces;
 
 namespace VertexFlow.SDK.Extensions
 {
+    /// <summary>
+    /// Provides additional methods that extend the <see cref="IMeshFlowListener"/> functionality.
+    /// </summary>
     public static class MeshFlowListenerExtensions
     {
         /// <summary>
