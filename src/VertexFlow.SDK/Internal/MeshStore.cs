@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Internal.Interfaces;
@@ -19,7 +20,7 @@ namespace VertexFlow.SDK.Internal
             return await _meshApi.GetAsync<TMeshData>(meshId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<TMeshData[]> GetAllAsync()
+        public async Task<IEnumerable<TMeshData>> GetAllAsync()
         {
             return await _meshApi.GetAllAsync<TMeshData>(CancellationToken.None).ConfigureAwait(false);
         }

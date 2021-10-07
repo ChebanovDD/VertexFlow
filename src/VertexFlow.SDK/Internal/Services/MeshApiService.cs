@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using VertexFlow.SDK.Internal.Interfaces;
 
@@ -28,9 +29,9 @@ namespace VertexFlow.SDK.Internal.Services
                 .ConfigureAwait(false);
         }
 
-        public async Task<TResponse[]> GetAllAsync<TResponse>(CancellationToken cancellationToken)
+        public async Task<IEnumerable<TResponse>> GetAllAsync<TResponse>(CancellationToken cancellationToken)
         {
-            return await _httpClient.GetAsObjectAsync<TResponse[]>(MeshesUri, cancellationToken).ConfigureAwait(false);
+            return await _httpClient.GetAsObjectAsync<IEnumerable<TResponse>>(MeshesUri, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task UpdateAsync<TRequest>(string meshId, TRequest meshRequest,

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
@@ -13,7 +14,7 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
     {
         private const string Server = "https://localhost:5001";
 
-        private CustomMesh[] _customMeshes;
+        private IEnumerable<CustomMesh> _customMeshes;
         
         private VertexFlow _vertexFlow;
 
@@ -41,8 +42,8 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         [Benchmark(Baseline = true)]
         public async Task SendAllMeshes_Newtonsoft_Stream()
         {
-            var tasks = Enumerable.Range(0, _customMeshes.Length)
-                .Select(i => _newtonsoftMeshFlow.UpdateAsync(_customMeshes[i].Id, _customMeshes[i]));
+            var tasks = _customMeshes
+                .Select(customMesh => _newtonsoftMeshFlow.UpdateAsync(customMesh.Id, customMesh));
 
             await Task.WhenAll(tasks);
         }
@@ -50,8 +51,8 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         [Benchmark]
         public async Task SendAllMeshes_SystemTextJson_Stream()
         {
-            var tasks = Enumerable.Range(0, _customMeshes.Length)
-                .Select(i => _systemTextMeshFlow.UpdateAsync(_customMeshes[i].Id, _customMeshes[i]));
+            var tasks = _customMeshes
+                .Select(customMesh => _systemTextMeshFlow.UpdateAsync(customMesh.Id, customMesh));
 
             await Task.WhenAll(tasks);
         }
@@ -59,8 +60,8 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         [Benchmark]
         public async Task SendAllMeshes_SystemTextJson_MemoryStreamManager()
         {
-            var tasks = Enumerable.Range(0, _customMeshes.Length)
-                .Select(i => _systemTextWithMemoryManagerMeshFlow.UpdateAsync(_customMeshes[i].Id, _customMeshes[i]));
+            var tasks = _customMeshes
+                .Select(customMesh => _systemTextWithMemoryManagerMeshFlow.UpdateAsync(customMesh.Id, customMesh));
 
             await Task.WhenAll(tasks);
         }

@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using VertexFlow.SDK.Benchmark.JsonSerializers;
 using VertexFlow.SDK.Benchmark.Models;
@@ -12,6 +14,7 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
     {
         private const string Server = "https://localhost:5001";
 
+        private Consumer _consumer;
         private VertexFlow _vertexFlow;
 
         private IMeshStore<CustomMesh> _newtonsoftMeshStore;
@@ -21,6 +24,7 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         [GlobalSetup]
         public void GlobalSetup()
         {
+            _consumer = new Consumer();
             _vertexFlow = new VertexFlow(Server);
 
             _newtonsoftMeshStore = _vertexFlow
@@ -34,21 +38,21 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         }
 
         [Benchmark(Baseline = true)]
-        public async Task<CustomMesh[]> GetAllMeshes_Newtonsoft_Stream()
+        public async Task GetAllMeshes_Newtonsoft_Stream()
         {
-            return await _newtonsoftMeshStore.GetAllAsync();
+            (await _newtonsoftMeshStore.GetAllAsync()).Consume(_consumer);
         }
         
         [Benchmark]
-        public async Task<CustomMesh[]> GetAllMeshes_SystemTextJson_Stream()
+        public async Task GetAllMeshes_SystemTextJson_Stream()
         {
-            return await _systemTextMeshStore.GetAllAsync();
+            (await _systemTextMeshStore.GetAllAsync()).Consume(_consumer);
         }
         
         [Benchmark]
-        public async Task<CustomMesh[]> GetAllMeshes_SystemTextJson_MemoryStreamManager()
+        public async Task GetAllMeshes_SystemTextJson_MemoryStreamManager()
         {
-            return await _systemTextWithMemoryManagerMeshStore.GetAllAsync();
+            (await _systemTextWithMemoryManagerMeshStore.GetAllAsync()).Consume(_consumer);
         }
         
         [GlobalCleanup]
