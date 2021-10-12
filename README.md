@@ -21,6 +21,7 @@ https://user-images.githubusercontent.com/28132516/134523455-40196416-a56f-48b0-
     - [Send Mesh Data](#send-mesh-data)
     - [Get Mesh Data](#get-mesh-data)
     - [Listen Mesh Data](#listen-mesh-data)
+    - [Custom Json Serializer](#custom-json-serializer)
 - [How To Use](#how-to-use)
     - [Export Mesh From Revit](#export-geometry-from-revit)
     - [Import Mesh To Unity](#import-mesh-to-unity)
@@ -43,11 +44,80 @@ Vertex Flow makes the process of bringing BIM models into real-time 3D extremely
 
 ## Installation
 
-> ### Azure Cosmos DB Emulator
+### Azure Cosmos DB Emulator
 
-> ### Revit Addin
+1. Download and install the latest version of [Azure Cosmos DB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21#install-the-emulator)
+2. [Start the Azure Cosmos DB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21#run-on-windows)
 
-> ### Unity Plugin
+### Revit Addin
+
+1. Download and install [Revit 2022](https://www.autodesk.com/products/revit/free-trial)
+2. Open the `VertexFlow.addin` file and replace the `Assembly` section with your output directory
+3. Open the `VertexFlow.RevitAddin.csproj` file and replace the `DestinationFolder` in the target `AfterBuild` section
+
+Once you build the solution and launch Revit, you should find the `Vertex Flow` pannel in the `Add-Ins` tab.
+
+<details><summary>Show Screenshot</summary>
+<br />
+    
+![RevitVertexFlowAddinPanel](https://user-images.githubusercontent.com/28132516/136948224-1506cb61-52c6-4b51-b10b-770a36fb741b.png)
+
+</details>
+
+> **Note:** If you don't want to install Revit, just unload the `src/VertexFlow.RevitAddin` project from the solution.
+
+### Unity Plugin
+
+1. Create `Assembly Definition` in the `Assets/Plugins/VertexFlow` folder with `VertexFlow` name
+2. Copy following libraries to the `Assets/Plugins/VertexFlow/libs` directory
+    - VertexFlow.Core.dll
+    - VertexFlow.Contracts.dll
+    - VertexFlow.SDK.dll
+    - VertexFlow.SDK.Extensions.dll
+    - VertexFlow.SDK.Listeners.dll
+3. Create `signalr.ps1` file in the `Assets/Plugins/VertexFlow/libs` folder
+    <details><summary>signalr.ps1</summary>
+    <br />
+
+    ```powershell
+    $srcVersion = "3.1.20"
+    $stjVersion = "4.7.2"
+    $target = "netstandard2.0"
+
+    $outDir = ".\temp"
+    $pluginDir = ".\"
+
+    nuget install Microsoft.AspNetCore.SignalR.Client -Version $srcVersion -OutputDirectory $outDir
+    nuget install System.Text.Json -Version $stjVersion -OutputDirectory $outDir
+
+    $packages = Get-ChildItem -Path $outDir
+    foreach ($p in $packages) {
+        $dll = Get-ChildItem -Path "$($p.FullName)\lib\$($target)\*.dll"
+        if (!($dll -eq $null)) {
+            $d = $dll[0]
+            if (!(Test-Path "$($pluginDir)\$($d.Name)")) {
+                Move-Item -Path $d.FullName -Destination $pluginDir
+            }
+        }
+    }
+
+    Remove-Item $outDir -Recurse
+    ```
+
+    </details>
+4. Check if [NuGet CLI](https://docs.microsoft.com/en-us/nuget/reference/nuget-exe-cli-reference) is installed locally
+5. Execute the following command in PowerShell from the `Assets/Plugins/VertexFlow/libs` directory to import the target .dll files
+    ```powershell
+    ./signalr.ps1
+    ```
+
+<details><summary>Additional Links</summary>
+<br />
+    
+- [Unity WebGL SignalR](https://github.com/evanlindsey/Unity-WebGL-SignalR)
+- [Communicate with SignalR from Unity](https://dev.to/masanori_msl/unity-communicate-with-signalr-from-unity-3739)
+    
+</details>
 
 ## Examples
 
@@ -85,10 +155,12 @@ static async Task Main()
     var meshData = GetMeshData();
     
     // Adds a mesh data to the database.
-    await meshFlow.SendAsync(meshData); // Note: Will fail if there already is a mesh data with the same id.
+    // Note: Will fail if there already is a mesh data with the same id.
+    await meshFlow.SendAsync(meshData);
     
     // Updates a mesh data in the database.
-    await meshFlow.UpdateAsync(meshData.Id, meshData); // Note: Will add or replace any mesh data with the specified id.
+    // Note: Will add or replace any mesh data with the specified id.
+    await meshFlow.UpdateAsync(meshData.Id, meshData);
 }
 
 private static CustomMesh GetMeshData()
@@ -150,7 +222,7 @@ static async Task Main()
 }
 ```
 
-Use `VertexFlow.SDK.Extensions` to set actions to monitor adding `OnMeshCreated` or updating `OnMeshUpdated` a mesh data in a database.
+Use `VertexFlow.SDK.Extensions` to automate the process of loading mesh data on adding `OnMeshCreated` or updating `OnMeshUpdated` a database.
 
 ```csharp
 using System.Net.Http;
@@ -178,17 +250,33 @@ static async Task Main()
 ```
 > **Note:** `MeshCreated` & `MeshUpdated` will provide only the id of the mesh as a parameter, while `OnMeshCreated` & `OnMeshUpdated` will provide the full mesh data.
 
+### Custom Json Serializer
+
+You can control how the mesh data is encoded into JSON.
+
+> ...
+
 ## How To Use
 
-> ### Export Geometry From Revit
+### Export Geometry From Revit
 
-> ### Import Mesh To Unity
+> In the `src/VertexFlow.RevitAddin` project you will find full example.
 
-> ### Import Mesh To Unigine
+### Import Mesh To Unity
+
+> ...
+
+### Import Mesh To Unigine
+
+> ...
 
 ## Optimizations
 
-> ### Benchmarks
+> ...
+
+### Benchmarks
+
+> ...
 
 ## License
 
