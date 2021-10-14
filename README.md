@@ -1,6 +1,6 @@
 # Vertex Flow
 
-Cross-platform library that allows you to transfer BIM data directly into your application and maintain a live link between them.
+A cross-platform library that allows you to transfer BIM data directly into your application and maintain a live link between them.
 
 <details open><summary><b>Video Demonstration</b></summary>
 <br />
@@ -46,12 +46,12 @@ Vertex Flow makes the process of bringing BIM models into real-time 3D extremely
 
 ### Azure Cosmos DB Emulator
 
-1. Download and install the latest version of [Azure Cosmos DB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21#install-the-emulator)
+1. Install the latest version of [Azure Cosmos DB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21#install-the-emulator)
 2. [Start the Azure Cosmos DB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21#run-on-windows)
 
 ### Revit Addin
 
-1. Download and install [Revit 2022](https://www.autodesk.com/products/revit/free-trial)
+1. Install [Revit 2022](https://www.autodesk.com/products/revit/free-trial)
 2. Open the `VertexFlow.addin` file and replace the `Assembly` section with your output directory
 3. Open the `VertexFlow.RevitAddin.csproj` file and replace the `DestinationFolder` in the target `AfterBuild` section
 
@@ -143,7 +143,7 @@ public class CustomMesh : MeshData<CustomVector3>
 
 ### Send Mesh Data
 
-`IMeshFlow<TMeshData>` is used for adding `SendAsync` or replacing `UpdateAsync` existing meshes in a database.
+`IMeshFlow<TMeshData>` provides methods for adding `SendAsync` or replacing `UpdateAsync` existing meshes in a database.
 
 ```csharp
 static async Task Main()
@@ -171,7 +171,7 @@ private static CustomMesh GetMeshData()
 
 ### Get Mesh Data
 
-`IMeshStore<TMeshData>` is used for reading `GetAsync` `GetAllAsync` or deleting `DeleteAsync` existing meshes from a database.
+`IMeshStore<TMeshData>` provides methods for reading `GetAsync`, `GetAllAsync`, or deleting `DeleteAsync` existing meshes from a database.
 
 ```csharp
 static async Task Main()
@@ -189,7 +189,7 @@ static async Task Main()
 
 ### Listen Mesh Data
 
-`IMeshFlowListener` is used to listen for changes in a database.
+`IMeshFlowListener` invokes `MeshCreated` or `MeshUpdated` in response to mesh data changes in a database.
 
 ```csharp
 using VertexFlow.SDK.Listeners;
@@ -262,22 +262,260 @@ You can control how the mesh data is encoded into JSON.
 
 > In the `src/VertexFlow.RevitAddin` project you will find full example.
 
+1. Create a class to store mesh data
+    - [RevitMesh](https://github.com/ChebanovDD/VertexFlow/blob/develop/src/VertexFlow.RevitAddin/Exporter/Models/RevitMesh.cs)
+2. Extract `Mesh` from an `Element`
+    - [MeshExtractor](https://github.com/ChebanovDD/VertexFlow/blob/develop/src/VertexFlow.RevitAddin/Exporter/MeshExtractor.cs)
+3. Construct `Mesh Data` from the extracted `Mesh`
+    - [MeshDataConstructor](https://github.com/ChebanovDD/VertexFlow/blob/develop/src/VertexFlow.RevitAddin/Exporter/MeshDataConstructor.cs)
+4. Send the `Mesh Data`
+    - [GeometryExporter](https://github.com/ChebanovDD/VertexFlow/blob/develop/src/VertexFlow.RevitAddin/Exporter/GeometryExporter.cs)
+
+> **Note:** `MeshDataConstructor` mirrors geometry along the `X` axis due to the `Unity` coordinate system. This approach avoids any transformation on the `Unity` side. But if you want to use this geometry in different 3D engines at the same time, it usually takes a trade-off to decide where to manually mirror it back.
+
 ### Import Mesh To Unity
 
-> ...
+Once you've [configured](#unity-plugin) your unity project:
+1. Create a class to store mesh data
+    <details><summary>UnityMesh</summary>
+    <br />
+    
+    ```csharp
+    using UnityEngine;
+    using VertexFlow.Contracts.Models;
 
+    public class UnityMesh : MeshData<Vector3>
+    {
+    }
+    ```
+    
+    </details>
+2. Implement the `MeshCreator` class
+    <details><summary>MeshCreator</summary>
+    <br />
+    
+    ```csharp
+    using UnityEngine;
+
+    public class MeshCreator
+    {
+        private readonly Material _meshMaterial;
+        private readonly Transform _meshContainer;
+
+        public MeshCreator(Transform meshContainer, Material meshMaterial)
+        {
+            _meshMaterial = meshMaterial;
+            _meshContainer = meshContainer;
+        
+            // Rotate due to Revit coordinate system.
+            _meshContainer.rotation = Quaternion.Euler(-90, 0, 0);
+        }
+
+        public MeshFilter CreateMesh(UnityMesh meshData)
+        {
+            var gameObj = new GameObject(meshData.Id);
+
+            // Sets mesh data to the game object.
+            var meshFilter = gameObj.AddComponent<MeshFilter>();
+            RebuildMesh(meshFilter.mesh, meshData);
+
+            // Sets default material.
+            gameObj.AddComponent<MeshRenderer>().sharedMaterial = _meshMaterial;
+
+            // Sets parent to the game object.
+            gameObj.transform.SetParent(_meshContainer, false);
+
+            return meshFilter;
+        }
+
+        public void RebuildMesh(Mesh mesh, UnityMesh meshData)
+        {
+            mesh.Clear();
+            mesh.vertices = meshData.Vertices;
+            mesh.triangles = meshData.Triangles;
+
+            if (meshData.Normals.Length == meshData.Vertices.Length)
+            {
+                mesh.normals = meshData.Normals;
+            }
+            else
+            {
+                mesh.RecalculateNormals();
+            }
+
+            mesh.Optimize();
+        }
+    }
+    ```
+    
+    </details>
+3. Implement the `UnityMeshProvider` class
+    <details><summary>UnityMeshProvider</summary>
+    <br />
+    
+    ```csharp
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using UnityEngine;
+    using VertexFlow.SDK.Extensions;
+    using VertexFlow.SDK.Interfaces;
+    using VertexFlow.SDK.Listeners;
+    using VertexFlow.SDK.Listeners.Interfaces;
+
+    public class UnityMeshProvider : IDisposable
+    {
+        private readonly MeshCreator _meshCreator;
+        private readonly Dictionary<string, MeshFilter> _meshes;
+
+        private readonly IMeshStore<UnityMesh> _meshStore;
+        private readonly IMeshFlowListener _meshFlowListener;
+        private readonly VertexFlow.SDK.VertexFlow _vertexFlow;
+
+        public UnityMeshProvider(Transform meshContainer, Material defaultMaterial)
+        {
+            _meshes = new Dictionary<string, MeshFilter>();
+            _meshCreator = new MeshCreator(meshContainer, defaultMaterial);
+
+            _vertexFlow = new VertexFlow.SDK.VertexFlow("https://localhost:5001");
+            _meshStore = _vertexFlow.CreateMeshStore<UnityMesh>();
+            _meshFlowListener = _vertexFlow
+                .CreateMeshFlowListener()
+                .WithStore(_meshStore)
+                .OnMeshCreated(CreateMesh)
+                .OnMeshUpdated(RebuildMesh);
+        }
+
+        public async Task StartMeshFlowListenerAsync()
+        {
+            await _meshFlowListener.StartAsync();
+        }
+
+        public async Task LoadAllMeshesAsync()
+        {
+            foreach (var meshData in await _meshStore.GetAllAsync())
+            {
+                CreateMesh(meshData);
+            }
+        }
+
+        public async Task StopMeshFlowListenerAsync()
+        {
+            await _meshFlowListener.StopAsync();
+        }
+
+        public void Dispose()
+        {
+            _meshFlowListener?.Dispose();
+            _vertexFlow?.Dispose();
+        }
+
+        private void CreateMesh(UnityMesh meshData)
+        {
+            _meshes.Add(meshData.Id, _meshCreator.CreateMesh(meshData));
+        }
+
+        private void RebuildMesh(UnityMesh meshData)
+        {
+            _meshCreator.RebuildMesh(_meshes[meshData.Id].mesh, meshData);
+        }
+    }
+    ```
+    
+    </details>
+4. Use the `UnityMeshProvider` class as following
+    <details><summary>App</summary>
+    <br />
+    
+    ```csharp
+    using Extensions;
+    using UnityEngine;
+
+    public class App : MonoBehaviour
+    {
+        [SerializeField] private Material _meshMaterial;
+        [SerializeField] private Transform _meshContainer;
+
+        private UnityMeshProvider _unityMeshProvider;
+
+        private void Awake()
+        {
+            _unityMeshProvider = new UnityMeshProvider(_meshContainer, _meshMaterial);
+        }
+
+        private void OnEnable()
+        {
+            _unityMeshProvider.StartMeshFlowListenerAsync().Forget();
+        }
+
+        private void Start()
+        {
+            _unityMeshProvider.LoadAllMeshesAsync().Forget();
+        }
+
+        private void OnDisable()
+        {
+            _unityMeshProvider.StopMeshFlowListenerAsync().Forget();
+        }
+
+        private void OnDestroy()
+        {
+            _unityMeshProvider.Dispose();
+        }
+    }
+    ```
+    
+    </details>
+        
 ### Import Mesh To Unigine
 
 > ...
 
 ## Optimizations
 
-> ...
+> In the `benchmarks/VertexFlow.SDK.Benchmark/JsonSerializers` directory you will find two custom json serializers.
+
+You can optimize performance and memory usage by writing a [custom json serializer](#custom-json-serializer).
 
 ### Benchmarks
 
-> ...
+> In the `benchmarks/VertexFlow.SDK.Benchmark` project you will find all benchmarks.
+
+The benchmarks were run on the [dataset](https://drive.google.com/file/d/1HbUXdPlHLjy1aB7gvVrgopWeLg9Ebi4U/view?usp=sharing) with realistic mesh data. The tests compare the `JsonSerializer` in the `Newtonsoft.Json` namespace (used by default) with two custom serializers based on `JsonSerializer` in the `System.Text.Json` namespace.
+
+<details><summary>Environment</summary>
+<br />
+<pre>
+BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19041.1165 (2004/May2020Update/20H1)
+Intel Core i7-8700 CPU 3.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
+.NET SDK=5.0.301
+  [Host]     : .NET 5.0.7 (5.0.721.25508), X64 RyuJIT
+  DefaultJob : .NET 5.0.7 (5.0.721.25508), X64 RyuJIT
+</pre>
+</details>
+
+#### Get All Async
+
+<pre>
+|                          Method |     Mean |    Error |   StdDev | Ratio |     Gen 0 |     Gen 1 |     Gen 2 | Allocated |
+| ------------------------------- |---------:|---------:|---------:|------:|----------:|----------:|----------:|----------:|
+|               Newtonsoft_Stream | 150.1 ms |  2.88 ms |  2.41 ms |  1.00 | 3000.0000 | 1000.0000 |         - |     24 MB |
+|           SystemTextJson_Stream | 114.2 ms |  2.02 ms |  1.89 ms |  0.76 |  400.0000 |  200.0000 |         - |      4 MB |
+| SystemTextJson_RecyclableStream | 113.9 ms |  1.61 ms |  1.51 ms |  0.76 |  400.0000 |  200.0000 |         - |      4 MB |
+</pre>
+
+#### Send All Async
+
+<pre>
+|                          Method |     Mean |    Error |   StdDev | Ratio |     Gen 0 |     Gen 1 |     Gen 2 | Allocated |
+|-------------------------------- |---------:|---------:|---------:|------:|----------:|----------:|----------:|----------:|
+|               Newtonsoft_Stream | 933.5 ms |  7.35 ms |  6.88 ms |  1.00 | 2000.0000 | 1000.0000 | 1000.0000 |     17 MB |
+|           SystemTextJson_Stream | 934.8 ms | 11.53 ms | 10.22 ms |  1.00 | 1000.0000 | 1000.0000 | 1000.0000 |      7 MB |
+| SystemTextJson_RecyclableStream | 931.6 ms |  6.41 ms |  5.68 ms |  1.00 |         - |         - |         - |      1 MB |
+</pre>
+
+> **Note:** Make sure your database contains data before running the `VertexFlow.SDK.Benchmark` project.
 
 ## License
 
-Usage is provided under the [MIT License](https://github.com/ChebanovDD/VertexFlow/blob/main/LICENSE).
+Usage is provided under the [MIT License](LICENSE).
