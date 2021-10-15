@@ -71,7 +71,6 @@ Once you build the solution and launch Revit, you should find the `Vertex Flow` 
 1. Create `Assembly Definition` in the `Assets/Plugins/VertexFlow` folder with `VertexFlow` name
 2. Copy following libraries to the `Assets/Plugins/VertexFlow/libs` directory
     - VertexFlow.Core.dll
-    - VertexFlow.Contracts.dll
     - VertexFlow.SDK.dll
     - VertexFlow.SDK.Extensions.dll
     - VertexFlow.SDK.Listeners.dll
@@ -258,6 +257,8 @@ You can control how the mesh data is encoded into JSON.
 
 ## How To Use
 
+Make sure the `src/VertexFlow.WebAPI` project is running to be able to transfer mesh data.
+
 ### Export Geometry From Revit
 
 > In the `src/VertexFlow.RevitAddin` project you will find full example.
@@ -282,7 +283,7 @@ Once you've [configured](#unity-plugin) your unity project:
     
     ```csharp
     using UnityEngine;
-    using VertexFlow.Contracts.Models;
+    using VertexFlow.Core.Models;
 
     public class UnityMesh : MeshData<Vector3>
     {
@@ -317,7 +318,7 @@ Once you've [configured](#unity-plugin) your unity project:
 
             // Sets mesh data to the game object.
             var meshFilter = gameObj.AddComponent<MeshFilter>();
-            RebuildMesh(meshFilter.mesh, meshData);
+            SetMeshData(meshFilter.mesh, meshData);
 
             // Sets default material.
             gameObj.AddComponent<MeshRenderer>().sharedMaterial = _meshMaterial;
@@ -328,15 +329,20 @@ Once you've [configured](#unity-plugin) your unity project:
             return meshFilter;
         }
 
-        public void RebuildMesh(Mesh mesh, UnityMesh meshData)
+        public void RebuildMesh(Mesh mesh, UnityMesh data)
         {
             mesh.Clear();
-            mesh.vertices = meshData.Vertices;
-            mesh.triangles = meshData.Triangles;
+            SetMeshData(mesh, data);
+        }
+        
+        private void SetMeshData(Mesh mesh, UnityMesh data)
+        {
+            mesh.vertices = data.Vertices;
+            mesh.triangles = data.Triangles;
 
-            if (meshData.Normals.Length == meshData.Vertices.Length)
+            if (data.Normals.Length == data.Vertices.Length)
             {
-                mesh.normals = meshData.Normals;
+                mesh.normals = data.Normals;
             }
             else
             {
@@ -469,7 +475,82 @@ Once you've [configured](#unity-plugin) your unity project:
         
 ### Import Mesh To Unigine
 
-> ...
+<details><summary>MeshCreator</summary>
+<br />
+
+```csharp
+using Unigine;
+
+namespace UnigineApp
+{
+    public class MeshCreator
+    {
+        private readonly vec3 _transformVertex;
+
+        public MeshCreator()
+        {
+            _transformVertex = new vec3(-0.1f, 0.1f, 0.1f);
+        }
+        
+        public ObjectMeshDynamic CreateMesh(UnigineMesh meshData)
+        {
+            var mesh = new ObjectMeshDynamic
+            {
+                MeshName = meshData.Id
+            };
+            mesh.SetMaterial("mesh_base", "*");
+		
+            SetMeshData(mesh, meshData);
+            
+            return mesh;
+        }
+        
+        public void RebuildMesh(ObjectMeshDynamic mesh, UnigineMesh data)
+        {
+            mesh.ClearVertex();
+            mesh.ClearIndices();
+            mesh.ClearSurfaces();
+
+            SetMeshData(mesh, data);
+		
+            mesh.FlushVertex();
+            mesh.FlushIndices();
+        }
+        
+        private void SetMeshData(ObjectMeshDynamic mesh, UnigineMesh data)
+        {
+            // Allocate space in index and vertex buffers.
+            mesh.AllocateIndices(data.Triangles.Length);
+            mesh.AllocateVertex(data.Vertices.Length);
+		
+            // Add vertices.
+            for (var i = 0; i < data.Vertices.Length; i++)
+            {
+                mesh.AddVertex(data.Vertices[i] * _transformVertex);
+            }
+		
+            // Add indices for created vertices.
+            for (var i = data.Triangles.Length - 1; i >= 0; i--)
+            {
+                mesh.AddIndex(data.Triangles[i]);
+            }
+		
+            // Calculate tangent vectors.
+            mesh.UpdateTangents();
+            
+            // Optimize vertex and index buffers, if necessary.
+            mesh.UpdateIndices();
+
+            // Calculate a mesh bounding box.
+            mesh.UpdateBounds();
+        }
+    }
+}
+```
+
+</details>
+
+> **Note:** `Unigine API` have to run from the [main thread](https://devblogs.microsoft.com/pfxteam/await-synchronizationcontext-and-console-apps/).
 
 ## Optimizations
 
