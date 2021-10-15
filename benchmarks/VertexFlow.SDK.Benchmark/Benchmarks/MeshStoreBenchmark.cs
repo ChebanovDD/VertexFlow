@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
@@ -18,8 +17,8 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         private VertexFlow _vertexFlow;
 
         private IMeshStore<CustomMesh> _newtonsoftMeshStore;
-        private IMeshStore<CustomMesh> _systemTextMeshStore;
-        private IMeshStore<CustomMesh> _systemTextWithMemoryManagerMeshStore;
+        private IMeshStore<CustomMesh> _systemTextStreamMeshStore;
+        private IMeshStore<CustomMesh> _systemTextRecyclableStreamMeshStore;
 
         [GlobalSetup]
         public void GlobalSetup()
@@ -30,11 +29,11 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
             _newtonsoftMeshStore = _vertexFlow
                 .CreateMeshStore<CustomMesh>();
 
-            _systemTextMeshStore = _vertexFlow
-                .CreateMeshStore<CustomMesh>(new SystemTextSerializer());
+            _systemTextStreamMeshStore = _vertexFlow
+                .CreateMeshStore<CustomMesh>(new SystemTextSerializerMemoryStream());
 
-            _systemTextWithMemoryManagerMeshStore = _vertexFlow
-                .CreateMeshStore<CustomMesh>(new SystemTextSerializerWithMemoryManager());
+            _systemTextRecyclableStreamMeshStore = _vertexFlow
+                .CreateMeshStore<CustomMesh>(new SystemTextSerializerRecyclableMemoryStream());
         }
 
         [Benchmark(Baseline = true)]
@@ -46,13 +45,13 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         [Benchmark]
         public async Task GetAllMeshes_SystemTextJson_Stream()
         {
-            (await _systemTextMeshStore.GetAllAsync()).Consume(_consumer);
+            (await _systemTextStreamMeshStore.GetAllAsync()).Consume(_consumer);
         }
         
         [Benchmark]
-        public async Task GetAllMeshes_SystemTextJson_MemoryStreamManager()
+        public async Task GetAllMeshes_SystemTextJson_RecyclableStream()
         {
-            (await _systemTextWithMemoryManagerMeshStore.GetAllAsync()).Consume(_consumer);
+            (await _systemTextRecyclableStreamMeshStore.GetAllAsync()).Consume(_consumer);
         }
         
         [GlobalCleanup]

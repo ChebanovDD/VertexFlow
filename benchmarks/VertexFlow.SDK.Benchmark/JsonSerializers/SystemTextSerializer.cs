@@ -8,13 +8,13 @@ using VertexFlow.SDK.Interfaces;
 
 namespace VertexFlow.SDK.Benchmark.JsonSerializers
 {
-    public class SystemTextSerializer : IJsonSerializer
+    public abstract class SystemTextSerializer : IJsonSerializer
     {
         private const string JsonMediaType = "application/json";
 
         private readonly JsonSerializerOptions _serializerOptions;
 
-        public SystemTextSerializer()
+        protected SystemTextSerializer()
         {
             _serializerOptions = new JsonSerializerOptions
             {
@@ -30,7 +30,7 @@ namespace VertexFlow.SDK.Benchmark.JsonSerializers
                 return null;
             }
 
-            var memoryStream = new MemoryStream();
+            var memoryStream = GetMemoryStream();
             await JsonSerializer.SerializeAsync(memoryStream, data, _serializerOptions, cancellationToken)
                 .ConfigureAwait(false);
             memoryStream.Seek(0, SeekOrigin.Begin);
@@ -47,5 +47,7 @@ namespace VertexFlow.SDK.Benchmark.JsonSerializers
             return await JsonSerializer.DeserializeAsync<T>(stream, _serializerOptions, cancellationToken)
                 .ConfigureAwait(false);
         }
+
+        protected abstract MemoryStream GetMemoryStream();
     }
 }

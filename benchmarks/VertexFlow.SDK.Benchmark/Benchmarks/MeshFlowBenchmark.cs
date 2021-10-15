@@ -19,8 +19,8 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         private VertexFlow _vertexFlow;
 
         private IMeshFlow<CustomMesh> _newtonsoftMeshFlow;
-        private IMeshFlow<CustomMesh> _systemTextMeshFlow;
-        private IMeshFlow<CustomMesh> _systemTextWithMemoryManagerMeshFlow;
+        private IMeshFlow<CustomMesh> _systemTextStreamMeshFlow;
+        private IMeshFlow<CustomMesh> _systemTextRecyclableStreamMeshFlow;
 
         [GlobalSetup]
         public async Task GlobalSetup()
@@ -30,11 +30,11 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
             _newtonsoftMeshFlow = _vertexFlow
                 .CreateMeshFlow<CustomMesh>();
             
-            _systemTextMeshFlow = _vertexFlow
-                .CreateMeshFlow<CustomMesh>(new SystemTextSerializer());
+            _systemTextStreamMeshFlow = _vertexFlow
+                .CreateMeshFlow<CustomMesh>(new SystemTextSerializerMemoryStream());
             
-            _systemTextWithMemoryManagerMeshFlow = _vertexFlow
-                .CreateMeshFlow<CustomMesh>(new SystemTextSerializerWithMemoryManager());
+            _systemTextRecyclableStreamMeshFlow = _vertexFlow
+                .CreateMeshFlow<CustomMesh>(new SystemTextSerializerRecyclableMemoryStream());
 
             _customMeshes = await _vertexFlow.CreateMeshStore<CustomMesh>().GetAllAsync();
         }
@@ -52,16 +52,16 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         public async Task SendAllMeshes_SystemTextJson_Stream()
         {
             var tasks = _customMeshes
-                .Select(customMesh => _systemTextMeshFlow.UpdateAsync(customMesh.Id, customMesh));
+                .Select(customMesh => _systemTextStreamMeshFlow.UpdateAsync(customMesh.Id, customMesh));
 
             await Task.WhenAll(tasks);
         }
 
         [Benchmark]
-        public async Task SendAllMeshes_SystemTextJson_MemoryStreamManager()
+        public async Task SendAllMeshes_SystemTextJson_RecyclableStream()
         {
             var tasks = _customMeshes
-                .Select(customMesh => _systemTextWithMemoryManagerMeshFlow.UpdateAsync(customMesh.Id, customMesh));
+                .Select(customMesh => _systemTextRecyclableStreamMeshFlow.UpdateAsync(customMesh.Id, customMesh));
 
             await Task.WhenAll(tasks);
         }
