@@ -1,4 +1,4 @@
-﻿namespace VertexFlow.Contracts.Models
+﻿namespace VertexFlow.Core.Models
 {
     public abstract class MeshData<TVector3>
     {

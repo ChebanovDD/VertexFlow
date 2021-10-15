@@ -1,4 +1,4 @@
-﻿using VertexFlow.Contracts.Models;
+﻿using VertexFlow.Core.Models;
 
 namespace VertexFlow.SDK.Benchmark.Models
 {
