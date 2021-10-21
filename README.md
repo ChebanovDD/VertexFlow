@@ -120,12 +120,12 @@ Once you build the solution and launch Revit, you should find the `Vertex Flow` 
 
 ## Examples
 
-> In the `samples/VertexFlow.SDK.Sample` project you will find full example.
+> You will find a complete example in the `samples/VertexFlow.SDK.Sample` project.
 
 First of all, create a class to store mesh data.
 
 ```csharp
-using VertexFlow.Contracts.Models;
+using VertexFlow.Core.Models;
 
 public struct CustomVector3
 {
@@ -138,7 +138,7 @@ public class CustomMesh : MeshData<CustomVector3>
 {
 }
 ```
-> You can use default `Vector3` from `VertexFlow.Core`
+> You can use default `Vector3` from `VertexFlow.Core.Structs`
 
 ### Send Mesh Data
 
@@ -153,11 +153,11 @@ static async Task Main()
     
     var meshData = GetMeshData();
     
-    // Adds a mesh data to the database.
+    // Adds the mesh data to a database.
     // Note: Will fail if there already is a mesh data with the same id.
     await meshFlow.SendAsync(meshData);
     
-    // Updates a mesh data in the database.
+    // Updates the mesh data in a database.
     // Note: Will add or replace any mesh data with the specified id.
     await meshFlow.UpdateAsync(meshData.Id, meshData);
 }
@@ -199,13 +199,13 @@ static async Task Main()
             
     using var meshFlowListener = vertexFlow.CreateMeshFlowListener();
 
-    // Occurs when new mesh data has been added to the database.
+    // Occurs when new mesh data has been added to a database.
     meshFlowListener.MeshCreated += (sender, meshId) =>
     {
         Console.WriteLine($"Mesh '{meshId}' created.");
     };
 
-    // Occurs when new mesh data has been updated in the database.
+    // Occurs when new mesh data has been updated in a database.
     meshFlowListener.MeshUpdated += (sender, meshId) =>
     {
         Console.WriteLine($"Mesh '{meshId}' updated.");
@@ -251,9 +251,40 @@ static async Task Main()
 
 ### Custom Json Serializer
 
-You can control how the mesh data is encoded into JSON.
+You can control how the mesh data is encoded into JSON. Once you've implemented the `IJsonSerializer` interface, you can pass the implementaton to the `CreateMeshFlow` and `CreateMeshStore` methods.
 
-> ...
+```csharp
+class CustomSerializer : IJsonSerializer
+{
+    public Task<HttpContent> SerializeAsync<T>(T data, CancellationToken cancellationToken)
+    {
+        ...
+    }
+
+    public Task<T> DeserializeAsync<T>(HttpContent httpContent, CancellationToken cancellationToken)
+    {
+        ...
+    }
+}
+
+static class Program
+{
+    static async Task Main()
+    {
+        using var vertexFlow = new VertexFlow("https://localhost:5001");
+
+        var customSerializer = new CustomSerializer();
+
+        var meshFlow = vertexFlow.CreateMeshFlow<CustomMesh>(customSerializer);
+        var meshStore = vertexFlow.CreateMeshStore<CustomMesh>(customSerializer);
+
+        ...
+    }
+}
+
+```
+
+> You will find two custom json serializers in the `benchmarks/VertexFlow.SDK.Benchmark/JsonSerializers` directory.
 
 ## How To Use
 
@@ -261,7 +292,7 @@ Make sure the `src/VertexFlow.WebAPI` project is running to be able to transfer 
 
 ### Export Geometry From Revit
 
-> In the `src/VertexFlow.RevitAddin` project you will find full example.
+> You will find a complete example in the `src/VertexFlow.RevitAddin` project.
 
 1. Create a class to store mesh data
     - [RevitMesh](https://github.com/ChebanovDD/VertexFlow/blob/develop/src/VertexFlow.RevitAddin/Exporter/Models/RevitMesh.cs)
@@ -272,7 +303,7 @@ Make sure the `src/VertexFlow.WebAPI` project is running to be able to transfer 
 4. Send the `Mesh Data`
     - [GeometryExporter](https://github.com/ChebanovDD/VertexFlow/blob/develop/src/VertexFlow.RevitAddin/Exporter/GeometryExporter.cs)
 
-> **Note:** `MeshDataConstructor` mirrors geometry along the `X` axis due to the `Unity` coordinate system. This approach avoids any transformation on the `Unity` side. But if you want to use this geometry in different 3D engines at the same time, it usually takes a trade-off to decide where to manually mirror it back.
+> **Note:** `MeshDataConstructor` mirrors geometry along the `X-axis` due to the `Unity` coordinate system. This approach avoids any transformation on the `Unity` side. But if you want to use this geometry in different 3D engines at the same time, it takes a trade-off to decide where to manually mirror it back.
 
 ### Import Mesh To Unity
 
@@ -412,8 +443,8 @@ Once you've [configured](#unity-plugin) your unity project:
 
         public void Dispose()
         {
-            _meshFlowListener?.Dispose();
-            _vertexFlow?.Dispose();
+            _meshFlowListener.Dispose();
+            _vertexFlow.Dispose();
         }
 
         private void CreateMesh(UnityMesh meshData)
@@ -475,6 +506,22 @@ Once you've [configured](#unity-plugin) your unity project:
         
 ### Import Mesh To Unigine
 
+For Unigine, all steps are the same as for [Unity](#import-mesh-to-unity), except the `UnigineMesh` and `MeshCreator` classes.
+	
+<details><summary>UnigineMesh</summary>
+<br />
+
+```csharp
+using Unigine;
+using VertexFlow.Core.Models;
+
+public class UnigineMesh : MeshData<vec3>
+{
+}
+```
+
+</details>
+		
 <details><summary>MeshCreator</summary>
 <br />
 
@@ -550,17 +597,17 @@ namespace UnigineApp
 
 </details>
 
-> **Note:** `Unigine API` have to run from the [main thread](https://devblogs.microsoft.com/pfxteam/await-synchronizationcontext-and-console-apps/).
+> **Note:** Unlike Unity, when the Unigine app's Main method is invoked, SynchronizationContext.Current will return null. That means that when you invoke an asynchronous method, it will not return to the main thread, but the `Unigine API` has to run from the main thread. You will find more information [here](https://devblogs.microsoft.com/pfxteam/await-synchronizationcontext-and-console-apps/).
 
 ## Optimizations
-
-> In the `benchmarks/VertexFlow.SDK.Benchmark/JsonSerializers` directory you will find two custom json serializers.
+	
+> You will find two custom json serializers in the `benchmarks/VertexFlow.SDK.Benchmark/JsonSerializers` directory.
 
 You can optimize performance and memory usage by writing a [custom json serializer](#custom-json-serializer).
 
 ### Benchmarks
 
-> In the `benchmarks/VertexFlow.SDK.Benchmark` project you will find all benchmarks.
+> You will find all benchmarks in the `benchmarks/VertexFlow.SDK.Benchmark` project.
 
 The benchmarks were run on the [dataset](https://drive.google.com/file/d/1HbUXdPlHLjy1aB7gvVrgopWeLg9Ebi4U/view?usp=sharing) with realistic mesh data. The tests compare the `JsonSerializer` in the `Newtonsoft.Json` namespace (used by default) with two custom serializers based on `JsonSerializer` in the `System.Text.Json` namespace.
 
