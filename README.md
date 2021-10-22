@@ -40,6 +40,8 @@ Vertex Flow is designed to speed up your building information modeling (BIM) wor
 
 Vertex Flow makes the process of bringing BIM models into real-time 3D extremely simple by unlocking the ability to stream data directly into your application.
 
+![HowItWorks](https://user-images.githubusercontent.com/28132516/138459974-5575f519-0435-416d-aef2-b2412351b265.png)
+
 > The first integration is with Revit, but you can integrate with any Autodesk products, as well as other industry tools.
 
 ## Installation
