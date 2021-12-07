@@ -1,9 +1,7 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using VertexFlow.SDK.Interfaces;
-using VertexFlow.SDK.Internal.Extensions;
 using VertexFlow.SDK.Internal.Interfaces;
 
 namespace VertexFlow.SDK.Internal
@@ -15,12 +13,10 @@ namespace VertexFlow.SDK.Internal
         
         public string BaseAddress => _httpClient.BaseAddress?.OriginalString;
         
-        public HttpClientFacade(Action<HttpClientFacadeConfig> config)
+        public HttpClientFacade(HttpClient httpClient, IJsonSerializer jsonSerializer)
         {
-            var configuration = config.Invoke<HttpClientFacadeConfig>();
-            
-            _httpClient = configuration.HttpClient;
-            _jsonSerializer = configuration.JsonSerializer;
+            _httpClient = httpClient;
+            _jsonSerializer = jsonSerializer;
         }
 
         public async Task<T> GetAsObjectAsync<T>(string requestUri, CancellationToken cancellationToken)

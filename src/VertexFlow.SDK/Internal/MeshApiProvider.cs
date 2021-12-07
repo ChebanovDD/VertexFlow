@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Internal.Interfaces;
 using VertexFlow.SDK.Internal.Serializers;
@@ -44,15 +45,17 @@ namespace VertexFlow.SDK.Internal
                 return meshApi;
             }
 
-            meshApi = new MeshApiService(new HttpClientFacade(config =>
-            {
-                config.HttpClient = httpClient;
-                config.JsonSerializer = jsonSerializer;
-            }));
+            meshApi = new MeshApiService(CreateHttpClient(httpClient, jsonSerializer));
 
             _meshApis.Add(jsonSerializer.GetType(), meshApi);
 
             return meshApi;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private IHttpClient CreateHttpClient(HttpClient httpClient, IJsonSerializer jsonSerializer)
+        {
+            return new HttpClientFacade(httpClient, jsonSerializer);
         }
     }
 }
