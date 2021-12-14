@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using VertexFlow.WebAPI.Interfaces;
 using VertexFlow.WebAPI.Mappers;
+using VertexFlow.WebAPI.Middlewares;
 using VertexFlow.WebApplication;
 using VertexFlow.WebInfrastructure;
 
@@ -52,6 +53,8 @@ namespace VertexFlow.WebAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "VertexFlow.WebAPI v1"));
             }
 
+            app.UseMiddleware<ExceptionMiddleware>();
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
