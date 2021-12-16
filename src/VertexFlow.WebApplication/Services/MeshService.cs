@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using VertexFlow.WebApplication.Enums;
 using VertexFlow.WebApplication.Interfaces;
 using VertexFlow.WebApplication.Interfaces.Repositories;
 using VertexFlow.WebApplication.Interfaces.Services;
@@ -39,7 +39,7 @@ namespace VertexFlow.WebApplication.Services
         public async Task UpdateAsync(string meshId, Mesh newMesh, CancellationToken cancellationToken)
         {
             var response = await _meshRepository.UpdateAsync(meshId, newMesh, cancellationToken).ConfigureAwait(false);
-            if (response == HttpStatusCode.Created)
+            if (response == MeshStatusCode.Created)
             {
                 await _meshNotifier.Created(meshId, cancellationToken).ConfigureAwait(false);
             }

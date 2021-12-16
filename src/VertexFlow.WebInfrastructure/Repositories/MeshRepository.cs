@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using VertexFlow.WebApplication.Enums;
 using VertexFlow.WebApplication.Interfaces.Repositories;
 using VertexFlow.WebApplication.Models;
 using VertexFlow.WebInfrastructure.DTOs;
@@ -50,13 +51,13 @@ namespace VertexFlow.WebInfrastructure.Repositories
             }
         }
 
-        public async Task<HttpStatusCode> UpdateAsync(string meshId, Mesh mesh, CancellationToken token)
+        public async Task<MeshStatusCode> UpdateAsync(string meshId, Mesh mesh, CancellationToken token)
         {
             var response = await _dbContainer
                 .UpsertItemAsync<MeshDto>(mesh.ToDto(), new PartitionKey(meshId), cancellationToken: token)
                 .ConfigureAwait(false);
 
-            return response.StatusCode;
+            return response.StatusCode == HttpStatusCode.Created ? MeshStatusCode.Created : MeshStatusCode.Updated;
         }
 
         public async Task DeleteAsync(string meshId, CancellationToken token)
