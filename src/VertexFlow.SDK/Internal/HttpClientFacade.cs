@@ -24,9 +24,10 @@ namespace VertexFlow.SDK.Internal
             using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
             using (var response = await SendAsync(request, cancellationToken).ConfigureAwait(false))
             {
-                response.EnsureSuccessStatusCode();
+                await EnsureSuccessStatusCode(response).ConfigureAwait(false);
                 
-                return await _jsonSerializer.DeserializeAsync<T>(response.Content, cancellationToken);
+                return await _jsonSerializer.DeserializeAsync<T>(response.Content, cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
 
@@ -51,18 +52,18 @@ namespace VertexFlow.SDK.Internal
             using (var request = new HttpRequestMessage(HttpMethod.Delete, requestUri))
             using (var response = await SendAsync(request, cancellationToken).ConfigureAwait(false))
             {
-                response.EnsureSuccessStatusCode();
+                await EnsureSuccessStatusCode(response).ConfigureAwait(false);
             }
         }
 
         private async Task SendAsJsonAsync<T>(HttpRequestMessage request, T data, CancellationToken cancellationToken)
         {
-            using (var httpContent = await _jsonSerializer.SerializeAsync(data, cancellationToken))
+            using (var httpContent = await _jsonSerializer.SerializeAsync(data, cancellationToken).ConfigureAwait(false))
             {
                 request.Content = httpContent;
                 using (var response = await SendAsync(request, cancellationToken).ConfigureAwait(false))
                 {
-                    response.EnsureSuccessStatusCode();
+                    await EnsureSuccessStatusCode(response).ConfigureAwait(false);
                 }
             }
         }
@@ -74,6 +75,23 @@ namespace VertexFlow.SDK.Internal
                 .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             
             return response;
+        }
+
+        private async ValueTask EnsureSuccessStatusCode(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                return;
+            }
+
+            if (response.Content == null)
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            else
+            {
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }
         }
     }
 }
