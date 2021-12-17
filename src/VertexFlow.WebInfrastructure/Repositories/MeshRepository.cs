@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Linq;
 using VertexFlow.WebApplication.Enums;
 using VertexFlow.WebApplication.Interfaces.Repositories;
 using VertexFlow.WebApplication.Models;
@@ -15,55 +14,76 @@ namespace VertexFlow.WebInfrastructure.Repositories
 {
     internal class MeshRepository : IMeshRepository
     {
-        private readonly Container _dbContainer;
+        private readonly Container _meshContainer;
+        private readonly IProjectRepository _projectRepository;
 
-        public MeshRepository(Container dbContainer)
+        public MeshRepository(Container meshContainer, IProjectRepository projectRepository)
         {
-            _dbContainer = dbContainer;
+            _meshContainer = meshContainer;
+            _projectRepository = projectRepository;
         }
 
-        public async Task AddAsync(Mesh mesh, CancellationToken token)
+        public async Task AddAsync(string projectName, Mesh mesh, CancellationToken token)
         {
-            await _dbContainer
-                .CreateItemAsync<MeshDto>(mesh.ToDto(), new PartitionKey(mesh.Id), cancellationToken: token)
+            var meshGuid = await _projectRepository.AddMeshToProjectAsync(projectName, mesh.Id, token)
+                .ConfigureAwait(false);
+            
+            await _meshContainer
+                .CreateItemAsync<MeshDto>(mesh.ToDto(meshGuid), new PartitionKey(meshGuid), cancellationToken: token)
                 .ConfigureAwait(false);
         }
 
-        public async Task<Mesh> GetAsync(string meshId, CancellationToken token)
+        public async Task<Mesh> GetAsync(string projectName, string meshId, CancellationToken token)
         {
-            var meshDto = await _dbContainer
-                .ReadItemAsync<MeshDto>(meshId, new PartitionKey(meshId), cancellationToken: token)
-                .ConfigureAwait(false);
+            var meshGuid = await _projectRepository.GetMeshGuidAsync(projectName, meshId, token).ConfigureAwait(false);
+            
+            var meshDto = await GetMeshDtoAsync(meshGuid, token).ConfigureAwait(false);
 
-            return meshDto?.Resource.ToMesh();
+            return meshDto.ToMesh(meshId);
         }
 
-        public async IAsyncEnumerable<Mesh> GetAllAsync([EnumeratorCancellation] CancellationToken token)
+        public async IAsyncEnumerable<Mesh> GetAllAsync(string projectName, [EnumeratorCancellation] CancellationToken token)
         {
-            using var query = _dbContainer.GetItemLinqQueryable<MeshDto>().ToFeedIterator();
+            var project = await _projectRepository.GetAsync(projectName, token).ConfigureAwait(false);
 
-            while (query.HasMoreResults)
+            // TODO: One request?
+            foreach (var (meshId, meshGuid) in project.MeshIds)
             {
-                foreach (var meshDto in await query.ReadNextAsync(token).ConfigureAwait(false))
-                {
-                    yield return meshDto.ToMesh();
-                }
+                var meshDto = await GetMeshDtoAsync(meshGuid, token).ConfigureAwait(false);
+
+                yield return meshDto.ToMesh(meshId);
             }
         }
 
-        public async Task<MeshStatusCode> UpdateAsync(string meshId, Mesh mesh, CancellationToken token)
+        public async Task<MeshStatusCode> UpdateAsync(string projectName, Mesh mesh, CancellationToken token)
         {
-            var response = await _dbContainer
-                .UpsertItemAsync<MeshDto>(mesh.ToDto(), new PartitionKey(meshId), cancellationToken: token)
+            var meshGuid = await _projectRepository.GetOrCreateMeshGuidAsync(projectName, mesh.Id, token)
+                .ConfigureAwait(false);
+
+            var response = await _meshContainer
+                .UpsertItemAsync<MeshDto>(mesh.ToDto(meshGuid), new PartitionKey(meshGuid), cancellationToken: token)
                 .ConfigureAwait(false);
 
             return response.StatusCode == HttpStatusCode.Created ? MeshStatusCode.Created : MeshStatusCode.Updated;
         }
 
-        public async Task DeleteAsync(string meshId, CancellationToken token)
+        public async Task DeleteAsync(string projectName, string meshId, CancellationToken token)
         {
-            await _dbContainer.DeleteItemAsync<MeshDto>(meshId, new PartitionKey(meshId), cancellationToken: token)
+            var meshGuid = await _projectRepository.DeleteMeshFromProjectAsync(projectName, meshId, token)
                 .ConfigureAwait(false);
+
+            await _meshContainer
+                .DeleteItemAsync<MeshDto>(meshGuid, new PartitionKey(meshGuid), cancellationToken: token)
+                .ConfigureAwait(false);
+        }
+
+        private async Task<MeshDto> GetMeshDtoAsync(string meshGuid, CancellationToken token)
+        {
+            var response = await _meshContainer
+                .ReadItemAsync<MeshDto>(meshGuid, new PartitionKey(meshGuid), cancellationToken: token)
+                .ConfigureAwait(false);
+
+            return response.Resource;
         }
     }
 }

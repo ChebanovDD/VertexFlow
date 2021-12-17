@@ -7,10 +7,10 @@ namespace VertexFlow.WebApplication.Interfaces.Services
 {
     public interface IMeshService
     {
-        Task AddAsync(Mesh mesh, CancellationToken cancellationToken);
-        Task<Mesh> GetAsync(string meshId, CancellationToken cancellationToken);
-        IAsyncEnumerable<Mesh> GetAllAsync(CancellationToken cancellationToken);
-        Task UpdateAsync(string meshId, Mesh newMesh, CancellationToken cancellationToken);
-        Task DeleteAsync(string meshId, CancellationToken cancellationToken);
+        Task AddAsync(string projectName, Mesh mesh, CancellationToken cancellationToken);
+        Task<Mesh> GetAsync(string projectName, string meshId, CancellationToken cancellationToken);
+        IAsyncEnumerable<Mesh> GetAllAsync(string projectName, CancellationToken cancellationToken);
+        Task UpdateAsync(string projectName, Mesh mesh, CancellationToken cancellationToken);
+        Task DeleteAsync(string projectName, string meshId, CancellationToken cancellationToken);
     }
 }

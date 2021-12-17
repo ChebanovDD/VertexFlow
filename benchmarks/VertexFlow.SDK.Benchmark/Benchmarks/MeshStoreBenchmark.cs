@@ -11,6 +11,7 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
     [MemoryDiagnoser, Orderer(SummaryOrderPolicy.Declared)]
     public class MeshStoreBenchmark
     {
+        private const string ProjectName = "TestProject";
         private const string Server = "https://localhost:5001";
 
         private Consumer _consumer;
@@ -27,13 +28,13 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
             _vertexFlow = new VertexFlow(Server);
 
             _newtonsoftMeshStore = _vertexFlow
-                .CreateMeshStore<CustomMesh>();
+                .CreateMeshStore<CustomMesh>(ProjectName);
 
             _systemTextStreamMeshStore = _vertexFlow
-                .CreateMeshStore<CustomMesh>(new SystemTextSerializerMemoryStream());
+                .CreateMeshStore<CustomMesh>(ProjectName, new SystemTextSerializerMemoryStream());
 
             _systemTextRecyclableStreamMeshStore = _vertexFlow
-                .CreateMeshStore<CustomMesh>(new SystemTextSerializerRecyclableMemoryStream());
+                .CreateMeshStore<CustomMesh>(ProjectName, new SystemTextSerializerRecyclableMemoryStream());
         }
 
         [Benchmark(Baseline = true)]

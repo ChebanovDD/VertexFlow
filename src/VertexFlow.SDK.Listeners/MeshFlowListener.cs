@@ -12,8 +12,8 @@ namespace VertexFlow.SDK.Listeners
         private readonly HubConnection _hubConnection;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public event EventHandler<string> MeshCreated;
-        public event EventHandler<string> MeshUpdated;
+        public event EventHandler<MeshEventArgs> MeshCreated;
+        public event EventHandler<MeshEventArgs> MeshUpdated;
 
         public MeshFlowListener(string server)
         {
@@ -21,8 +21,8 @@ namespace VertexFlow.SDK.Listeners
                 .WithUrl($"{server}/notification")
                 .Build();
 
-            var meshCreatedConnection = _hubConnection.On<string>("Created", OnMeshCreated);
-            var meshUpdatedConnection = _hubConnection.On<string>("Updated", OnMeshUpdated);
+            var meshCreatedConnection = _hubConnection.On<string, string>("Created", OnMeshCreated);
+            var meshUpdatedConnection = _hubConnection.On<string, string>("Updated", OnMeshUpdated);
 
             _disposables.Add(meshCreatedConnection);
             _disposables.Add(meshUpdatedConnection);
@@ -66,14 +66,14 @@ namespace VertexFlow.SDK.Listeners
             }
         }
 
-        private void OnMeshCreated(string meshId)
+        private void OnMeshCreated(string projectName, string meshId)
         {
-            MeshCreated?.Invoke(this, meshId);
+            MeshCreated?.Invoke(this, new MeshEventArgs(projectName, meshId));
         }
 
-        private void OnMeshUpdated(string meshId)
+        private void OnMeshUpdated(string projectName, string meshId)
         {
-            MeshUpdated?.Invoke(this, meshId);
+            MeshUpdated?.Invoke(this, new MeshEventArgs(projectName, meshId));
         }
     }
 }

@@ -10,10 +10,18 @@ namespace VertexFlow.SDK.Sample
     {
         static async Task Main()
         {
+            const string projectName = "TestProject";
             using var vertexFlow = new VertexFlow("https://localhost:5001");
-            
-            var meshFlow = vertexFlow.CreateMeshFlow<CustomMesh>();
-            var meshStore = vertexFlow.CreateMeshStore<CustomMesh>();
+
+            // var project = (await vertexFlow.GetProjectsAsync()).FirstOrDefault();
+            // if (project == null)
+            // {
+            //     Console.WriteLine("No projects in the database.");
+            //     return;
+            // }
+
+            var meshFlow = vertexFlow.CreateMeshFlow<CustomMesh>(projectName);
+            var meshStore = vertexFlow.CreateMeshStore<CustomMesh>(projectName);
             
             using var meshFlowListener = await vertexFlow
                 .CreateMeshFlowListener()
@@ -25,7 +33,7 @@ namespace VertexFlow.SDK.Sample
             {
                 Console.WriteLine($"Mesh '{mesh.Id}' downloaded.");
                 
-                await meshFlow.UpdateAsync(mesh.Id, mesh);
+                await meshFlow.UpdateAsync(mesh);
                 await Task.Delay(100);
             }
             

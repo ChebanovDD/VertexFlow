@@ -20,9 +20,14 @@ namespace VertexFlow.RevitAddin.Exporter
             _meshDataConstructor = new MeshDataConstructor();
             
             _vertexFlow = new SDK.VertexFlow(server);
-            _meshFlow = _vertexFlow.CreateMeshFlow<RevitMesh>();
+            _meshFlow = _vertexFlow.CreateMeshFlow<RevitMesh>("TestProject");
         }
-        
+
+        public void SetProject(string projectName)
+        {
+            _meshFlow.ProjectName = projectName;
+        }
+
         public async Task SendOrUpdateElementAsync(Element element)
         {
             var meshes = _meshExtractor.GetMeshes(element);
@@ -32,7 +37,7 @@ namespace VertexFlow.RevitAddin.Exporter
             }
             
             var meshData = _meshDataConstructor.ConstructMeshData(meshes, element.Id);
-            await _meshFlow.UpdateAsync(meshData.Id, meshData).ConfigureAwait(false);
+            await _meshFlow.UpdateAsync(meshData).ConfigureAwait(false);
         }
         
         public void Dispose()

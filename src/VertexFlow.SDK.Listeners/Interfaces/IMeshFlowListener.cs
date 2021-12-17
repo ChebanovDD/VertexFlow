@@ -17,17 +17,17 @@ namespace VertexFlow.SDK.Listeners.Interfaces
         /// Occurs when new mesh data has been added to the database.
         /// </summary>
         /// <remarks>
-        /// The <see cref="string"/> parameter will contain the id of the created mesh.
+        /// The <see cref="MeshEventArgs"/> parameter will contain the data of the created mesh.
         /// </remarks>
-        event EventHandler<string> MeshCreated;
+        event EventHandler<MeshEventArgs> MeshCreated;
 
         /// <summary>
         /// Occurs when new mesh data has been updated in the database.
         /// </summary>
         /// <remarks>
-        /// The <see cref="string"/> parameter will contain the id of the updated mesh.
+        /// The <see cref="MeshEventArgs"/> parameter will contain the data of the updated mesh.
         /// </remarks>
-        event EventHandler<string> MeshUpdated;
+        event EventHandler<MeshEventArgs> MeshUpdated;
 
         /// <summary>
         /// Starts listening to the server.

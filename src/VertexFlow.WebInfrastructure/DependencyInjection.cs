@@ -16,7 +16,7 @@ namespace VertexFlow.WebInfrastructure
         {
             services.AddSignalR();
             services.AddSingleton<IMeshNotifier, MeshNotifier>();
-            services.AddSingleton<IMeshRepository>(CreateMeshRepositoryAsync(configuration).GetAwaiter().GetResult());
+            services.AddRepositoriesAsync(configuration).GetAwaiter().GetResult();
         }
         
         public static void MapNotifiers(this IEndpointRouteBuilder endpoints)
@@ -24,20 +24,49 @@ namespace VertexFlow.WebInfrastructure
             endpoints.MapHub<MeshHub>("/notification");
         }
 
-        private static async Task<MeshRepository> CreateMeshRepositoryAsync(IConfiguration configuration)
+        private static async Task AddRepositoriesAsync(this IServiceCollection services, IConfiguration configuration)
         {
-            var cosmosConfigSection = configuration.GetSection("CosmosDb");
+            var cosmosConfig = configuration.GetSection("CosmosDb");
 
-            var uri = cosmosConfigSection["Uri"];
-            var key = cosmosConfigSection["Key"];
-            var databaseName = cosmosConfigSection["DatabaseName"];
-            var containerName = cosmosConfigSection["ContainerName"];
+            var database = await GetOrCreateDatabaseAsync(cosmosConfig).ConfigureAwait(false);
+            var meshContainer = await CreateMeshRepositoryAsync(database, cosmosConfig).ConfigureAwait(false);
+            var projectContainer = await CreateProjectRepositoryAsync(database, cosmosConfig).ConfigureAwait(false);
+
+            var projectRepository = new ProjectRepository(projectContainer);
+
+            services.AddSingleton<IProjectRepository>(projectRepository);
+            services.AddSingleton<IMeshRepository>(new MeshRepository(meshContainer, projectRepository));
+        }
+
+        private static async Task<Database> GetOrCreateDatabaseAsync(IConfiguration cosmosConfig)
+        {
+            var uri = cosmosConfig["Uri"];
+            var key = cosmosConfig["Key"];
+            var databaseName = cosmosConfig["DatabaseName"];
 
             var client = new CosmosClient(uri, key);
             var database = await client.CreateDatabaseIfNotExistsAsync(databaseName).ConfigureAwait(false);
-            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id").ConfigureAwait(false);
 
-            return new MeshRepository(client.GetContainer(databaseName, containerName));
+            return database.Database;
+        }
+
+        private static async Task<Container> CreateMeshRepositoryAsync(Database database, IConfiguration cosmosConfig)
+        {
+            return await CreateContainerAsync(database, cosmosConfig["MeshesContainerName"]);
+        }
+
+        private static async Task<Container> CreateProjectRepositoryAsync(Database database, IConfiguration cosmosConfig)
+        {
+            return await CreateContainerAsync(database, cosmosConfig["ProjectsContainerName"]);
+        }
+
+        private static async Task<Container> CreateContainerAsync(Database database, string containerName)
+        {
+            var response = await database
+                .CreateContainerIfNotExistsAsync(containerName, "/id")
+                .ConfigureAwait(false);
+
+            return response.Container;
         }
     }
 }

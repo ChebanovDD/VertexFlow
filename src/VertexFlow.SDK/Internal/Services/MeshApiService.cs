@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using VertexFlow.SDK.Internal.Interfaces;
@@ -7,43 +8,53 @@ namespace VertexFlow.SDK.Internal.Services
 {
     internal class MeshApiService : IMeshApi
     {
-        private const string MeshesUri = "api/meshes";
+        private const string MeshesUri = "api/meshes/{0}";
 
         private readonly IHttpClient _httpClient;
-        
-        public string BaseAddress => _httpClient.BaseAddress;
-        
+
         public MeshApiService(IHttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task Create<TRequest>(TRequest meshRequest, CancellationToken cancellationToken)
+        public async Task Add<TRequest>(string projectName, TRequest meshRequest, CancellationToken cancellationToken)
         {
-            await _httpClient.PostAsJsonAsync(MeshesUri, meshRequest, cancellationToken).ConfigureAwait(false);
+            await _httpClient.PostAsJsonAsync(GetUri(projectName), meshRequest, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<TResponse> GetAsync<TResponse>(string meshId, CancellationToken cancellationToken)
-        {
-            return await _httpClient.GetAsObjectAsync<TResponse>($"{MeshesUri}/{meshId}", cancellationToken)
-                .ConfigureAwait(false);
-        }
-
-        public async Task<IEnumerable<TResponse>> GetAllAsync<TResponse>(CancellationToken cancellationToken)
-        {
-            return await _httpClient.GetAsObjectAsync<IEnumerable<TResponse>>(MeshesUri, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task UpdateAsync<TRequest>(string meshId, TRequest meshRequest,
+        public async Task<TResponse> GetAsync<TResponse>(string projectName, string meshId,
             CancellationToken cancellationToken)
         {
-            await _httpClient.PutAsJsonAsync($"{MeshesUri}/{meshId}", meshRequest, cancellationToken)
+            return await _httpClient.GetAsObjectAsync<TResponse>($"{GetUri(projectName)}/{meshId}", cancellationToken)
                 .ConfigureAwait(false);
         }
 
-        public async Task DeleteAsync(string meshId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TResponse>> GetAllAsync<TResponse>(string projectName,
+            CancellationToken cancellationToken)
         {
-            await _httpClient.DeleteAsync($"{MeshesUri}/{meshId}", cancellationToken).ConfigureAwait(false);
+            return await _httpClient.GetAsObjectAsync<IEnumerable<TResponse>>(GetUri(projectName), cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        public async Task UpdateAsync<TRequest>(string projectName, TRequest meshRequest,
+            CancellationToken cancellationToken)
+        {
+            await _httpClient.PutAsJsonAsync(GetUri(projectName), meshRequest, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task DeleteAsync(string projectName, string meshId, CancellationToken cancellationToken)
+        {
+            await _httpClient.DeleteAsync($"{GetUri(projectName)}/{meshId}", cancellationToken).ConfigureAwait(false);
+        }
+
+        private string GetUri(string projectName)
+        {
+            if (string.IsNullOrWhiteSpace(projectName))
+            {
+                throw new ArgumentNullException(nameof(projectName));
+            }
+
+            return string.Format(MeshesUri, projectName);
         }
     }
 }

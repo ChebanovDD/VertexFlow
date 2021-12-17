@@ -9,6 +9,7 @@ namespace VertexFlow.WebApplication
         public static void AddApplication(this IServiceCollection services)
         {
             services.AddSingleton<IMeshService, MeshService>();
+            services.AddSingleton<IProjectService, ProjectService>();
         }
     }
 }

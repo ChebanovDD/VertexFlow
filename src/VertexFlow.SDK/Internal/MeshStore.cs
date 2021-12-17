@@ -10,24 +10,27 @@ namespace VertexFlow.SDK.Internal
     {
         private readonly IMeshApi _meshApi;
 
-        public MeshStore(IMeshApi meshApi)
+        public MeshStore(string projectName, IMeshApi meshApi)
         {
             _meshApi = meshApi;
+            ProjectName = projectName;
         }
 
+        public string ProjectName { get; set; }
+        
         public async Task<TMeshData> GetAsync(string meshId, CancellationToken cancellationToken = default)
         {
-            return await _meshApi.GetAsync<TMeshData>(meshId, cancellationToken).ConfigureAwait(false);
+            return await _meshApi.GetAsync<TMeshData>(ProjectName, meshId, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<TMeshData>> GetAllAsync()
         {
-            return await _meshApi.GetAllAsync<TMeshData>(CancellationToken.None).ConfigureAwait(false);
+            return await _meshApi.GetAllAsync<TMeshData>(ProjectName, CancellationToken.None).ConfigureAwait(false);
         }
 
         public async Task DeleteAsync(string meshId, CancellationToken cancellationToken = default)
         {
-            await _meshApi.DeleteAsync(meshId, cancellationToken).ConfigureAwait(false);
+            await _meshApi.DeleteAsync(ProjectName, meshId, cancellationToken).ConfigureAwait(false);
         }
     }
 }

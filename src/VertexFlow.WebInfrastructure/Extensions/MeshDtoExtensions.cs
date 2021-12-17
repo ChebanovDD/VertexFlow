@@ -5,22 +5,22 @@ namespace VertexFlow.WebInfrastructure.Extensions
 {
     internal static class MeshDtoExtensions
     {
-        public static MeshDto ToDto(this Mesh mesh)
+        public static MeshDto ToDto(this Mesh mesh, string meshGuid)
         {
             return new MeshDto
             {
-                Id = mesh.Id,
+                Guid = meshGuid,
                 Triangles = mesh.Triangles,
                 Vertices = mesh.Vertices,
                 Normals = mesh.Normals
             };
         }
 
-        public static Mesh ToMesh(this MeshDto meshData)
+        public static Mesh ToMesh(this MeshDto meshData, string meshId)
         {
             return new Mesh
             (
-                meshData.Id,
+                meshId,
                 meshData.Triangles,
                 meshData.Vertices,
                 meshData.Normals

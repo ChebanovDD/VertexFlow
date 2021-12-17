@@ -8,7 +8,7 @@ namespace VertexFlow.SDK.Interfaces
     /// Defines methods for reading or deleting existing meshes from a database.
     /// </summary>
     /// <typeparam name="TMeshData">The type of object representing the mesh data.</typeparam>
-    public interface IMeshStore<TMeshData>
+    public interface IMeshStore<TMeshData> : IProjectContainer
     {
         /// <summary>
         /// Reads a mesh data from the database as an asynchronous operation.

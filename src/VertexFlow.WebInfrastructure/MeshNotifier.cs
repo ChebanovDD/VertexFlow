@@ -14,19 +14,19 @@ namespace VertexFlow.WebInfrastructure
             _meshNotificationHub = meshNotificationHub;
         }
 
-        public async Task Created(string meshId, CancellationToken cancellationToken)
+        public async Task Created(string projectName, string meshId, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested == false)
             {
-                await _meshNotificationHub.Clients.All.Created(meshId).ConfigureAwait(false);
+                await _meshNotificationHub.Clients.All.Created(projectName, meshId).ConfigureAwait(false);
             }
         }
 
-        public async Task Updated(string meshId, CancellationToken cancellationToken)
+        public async Task Updated(string projectName, string meshId, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested == false)
             {
-                await _meshNotificationHub.Clients.All.Updated(meshId).ConfigureAwait(false);
+                await _meshNotificationHub.Clients.All.Updated(projectName, meshId).ConfigureAwait(false);
             }
         }
     }

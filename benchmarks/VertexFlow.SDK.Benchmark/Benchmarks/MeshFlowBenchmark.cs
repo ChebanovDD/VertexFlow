@@ -12,10 +12,11 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
     [MemoryDiagnoser, Orderer(SummaryOrderPolicy.Declared)]
     public class MeshFlowBenchmark
     {
+        private const string ProjectName = "TestProject";
         private const string Server = "https://localhost:5001";
 
         private IEnumerable<CustomMesh> _customMeshes;
-        
+
         private VertexFlow _vertexFlow;
 
         private IMeshFlow<CustomMesh> _newtonsoftMeshFlow;
@@ -26,33 +27,31 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         public async Task GlobalSetup()
         {
             _vertexFlow = new VertexFlow(Server);
-            
-            _newtonsoftMeshFlow = _vertexFlow
-                .CreateMeshFlow<CustomMesh>();
-            
-            _systemTextStreamMeshFlow = _vertexFlow
-                .CreateMeshFlow<CustomMesh>(new SystemTextSerializerMemoryStream());
-            
-            _systemTextRecyclableStreamMeshFlow = _vertexFlow
-                .CreateMeshFlow<CustomMesh>(new SystemTextSerializerRecyclableMemoryStream());
 
-            _customMeshes = await _vertexFlow.CreateMeshStore<CustomMesh>().GetAllAsync();
+            _newtonsoftMeshFlow = _vertexFlow
+                .CreateMeshFlow<CustomMesh>(ProjectName);
+
+            _systemTextStreamMeshFlow = _vertexFlow
+                .CreateMeshFlow<CustomMesh>(ProjectName, new SystemTextSerializerMemoryStream());
+
+            _systemTextRecyclableStreamMeshFlow = _vertexFlow
+                .CreateMeshFlow<CustomMesh>(ProjectName, new SystemTextSerializerRecyclableMemoryStream());
+
+            _customMeshes = await _vertexFlow.CreateMeshStore<CustomMesh>(ProjectName).GetAllAsync();
         }
 
         [Benchmark(Baseline = true)]
         public async Task SendAllMeshes_Newtonsoft_Stream()
         {
-            var tasks = _customMeshes
-                .Select(customMesh => _newtonsoftMeshFlow.UpdateAsync(customMesh.Id, customMesh));
+            var tasks = _customMeshes.Select(customMesh => _newtonsoftMeshFlow.UpdateAsync(customMesh));
 
             await Task.WhenAll(tasks);
         }
-        
+
         [Benchmark]
         public async Task SendAllMeshes_SystemTextJson_Stream()
         {
-            var tasks = _customMeshes
-                .Select(customMesh => _systemTextStreamMeshFlow.UpdateAsync(customMesh.Id, customMesh));
+            var tasks = _customMeshes.Select(customMesh => _systemTextStreamMeshFlow.UpdateAsync(customMesh));
 
             await Task.WhenAll(tasks);
         }
@@ -60,8 +59,7 @@ namespace VertexFlow.SDK.Benchmark.Benchmarks
         [Benchmark]
         public async Task SendAllMeshes_SystemTextJson_RecyclableStream()
         {
-            var tasks = _customMeshes
-                .Select(customMesh => _systemTextRecyclableStreamMeshFlow.UpdateAsync(customMesh.Id, customMesh));
+            var tasks = _customMeshes.Select(customMesh => _systemTextRecyclableStreamMeshFlow.UpdateAsync(customMesh));
 
             await Task.WhenAll(tasks);
         }

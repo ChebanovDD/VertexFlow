@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using VertexFlow.SDK.Extensions.Extensions;
 using VertexFlow.SDK.Extensions.Interfaces;
 using VertexFlow.SDK.Interfaces;
+using VertexFlow.SDK.Listeners;
 using VertexFlow.SDK.Listeners.Interfaces;
 
 namespace VertexFlow.SDK.Extensions
@@ -16,13 +17,13 @@ namespace VertexFlow.SDK.Extensions
         private readonly IMeshStore<TMeshData> _meshStore;
         private readonly IMeshFlowListener _meshFlowListener;
 
-        public event EventHandler<string> MeshCreated
+        public event EventHandler<MeshEventArgs> MeshCreated
         {
             add => _meshFlowListener.MeshCreated += value;
             remove => _meshFlowListener.MeshCreated -= value;
         }
 
-        public event EventHandler<string> MeshUpdated
+        public event EventHandler<MeshEventArgs> MeshUpdated
         {
             add => _meshFlowListener.MeshUpdated += value;
             remove => _meshFlowListener.MeshUpdated -= value;
@@ -74,24 +75,29 @@ namespace VertexFlow.SDK.Extensions
             _meshFlowListener.Dispose();
         }
 
-        private void OnMeshCreated(object sender, string meshId)
+        private void OnMeshCreated(object sender, MeshEventArgs e)
         {
-            RaiseMeshChanged(meshId, _onMeshCreated, _continueOnCapturedContext).Forget(false);
+            RaiseMeshChanged(e, _onMeshCreated, _continueOnCapturedContext).Forget(false);
         }
 
-        private void OnMeshUpdated(object sender, string meshId)
+        private void OnMeshUpdated(object sender, MeshEventArgs e)
         {
-            RaiseMeshChanged(meshId, _onMeshUpdated, _continueOnCapturedContext).Forget(false);
+            RaiseMeshChanged(e, _onMeshUpdated, _continueOnCapturedContext).Forget(false);
         }
 
-        private async Task RaiseMeshChanged(string meshId, Action<TMeshData> action, bool configureAwait)
+        private async Task RaiseMeshChanged(MeshEventArgs e, Action<TMeshData> action, bool configureAwait)
         {
             if (action == null)
             {
                 return;
             }
 
-            var mesh = await _meshStore.GetAsync(meshId).ConfigureAwait(configureAwait);
+            if (_meshStore.ProjectName != e.ProjectName)
+            {
+                return;
+            }
+            
+            var mesh = await _meshStore.GetAsync(e.MeshId).ConfigureAwait(configureAwait);
             if (mesh != null)
             {
                 action(mesh);

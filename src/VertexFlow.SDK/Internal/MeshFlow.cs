@@ -9,19 +9,22 @@ namespace VertexFlow.SDK.Internal
     {
         private readonly IMeshApi _meshesApi;
 
-        public MeshFlow(IMeshApi meshesApi)
+        public MeshFlow(string projectName, IMeshApi meshesApi)
         {
             _meshesApi = meshesApi;
+            ProjectName = projectName;
         }
+
+        public string ProjectName { get; set; }
 
         public async Task SendAsync(TMeshData mesh, CancellationToken cancellationToken = default)
         {
-            await _meshesApi.Create<TMeshData>(mesh, cancellationToken).ConfigureAwait(false);
+            await _meshesApi.Add<TMeshData>(ProjectName, mesh, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task UpdateAsync(string meshId, TMeshData mesh, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(TMeshData mesh, CancellationToken cancellationToken = default)
         {
-            await _meshesApi.UpdateAsync(meshId, mesh, cancellationToken).ConfigureAwait(false);
+            await _meshesApi.UpdateAsync(ProjectName, mesh, cancellationToken).ConfigureAwait(false);
         }
     }
 }

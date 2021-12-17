@@ -12,7 +12,7 @@ namespace VertexFlow.WebAPI.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/{projectName}")]
     public class MeshesController : ControllerBase
     {
         private readonly IMeshDataMapper _mapper;
@@ -23,41 +23,44 @@ namespace VertexFlow.WebAPI.Controllers
             _mapper = mapper;
             _meshService = meshService;
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] MeshRequest meshRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Add(string projectName, [FromBody] MeshRequest meshRequest,
+            CancellationToken cancellationToken)
         {
-            await _meshService.AddAsync(_mapper.FromRequest(meshRequest), cancellationToken);
-            return CreatedAtAction(nameof(Get), new {meshId = meshRequest.Id}, meshRequest);
+            await _meshService.AddAsync(projectName, _mapper.FromRequest(meshRequest), cancellationToken);
+            return NoContent();
         }
 
         [HttpGet("{meshId}")]
-        public async Task<IActionResult> Get(string meshId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(string projectName, string meshId, CancellationToken cancellationToken)
         {
-            var mesh = await _meshService.GetAsync(meshId, cancellationToken); 
+            var mesh = await _meshService.GetAsync(projectName, meshId, cancellationToken);
             return Ok(_mapper.ToResponse(mesh));
         }
-        
+
         [HttpGet]
-        public async IAsyncEnumerable<MeshResponse> GetAll([EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<MeshResponse> GetAll(string projectName,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            await foreach (var mesh in _meshService.GetAllAsync(cancellationToken))
+            await foreach (var mesh in _meshService.GetAllAsync(projectName, cancellationToken))
             {
                 yield return _mapper.ToResponse(mesh);
             }
         }
 
-        [HttpPut("{meshId}")]
-        public async Task<IActionResult> Update(string meshId, [FromBody] MeshRequest meshRequest, CancellationToken cancellationToken)
+        [HttpPut]
+        public async Task<IActionResult> Update(string projectName, [FromBody] MeshRequest meshRequest,
+            CancellationToken cancellationToken)
         {
-            await _meshService.UpdateAsync(meshId, _mapper.FromRequest(meshRequest), cancellationToken);
+            await _meshService.UpdateAsync(projectName, _mapper.FromRequest(meshRequest), cancellationToken);
             return NoContent();
         }
 
         [HttpDelete("{meshId}")]
-        public async Task<IActionResult> Delete(string meshId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(string projectName, string meshId, CancellationToken cancellationToken)
         {
-            await _meshService.DeleteAsync(meshId, cancellationToken);
+            await _meshService.DeleteAsync(projectName, meshId, cancellationToken);
             return NoContent();
         }
     }

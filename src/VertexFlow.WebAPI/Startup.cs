@@ -29,6 +29,7 @@ namespace VertexFlow.WebAPI
             services.AddApplication();
             services.AddInfrastructure(_configuration);
             services.AddSingleton<IMeshDataMapper, MeshDataMapper>();
+            services.AddSingleton<IProjectDataMapper, ProjectDataMapper>();
             
             services.AddSwaggerGen(c =>
             {

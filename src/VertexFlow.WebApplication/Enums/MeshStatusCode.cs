@@ -2,7 +2,9 @@
 {
     public enum MeshStatusCode
     {
+        None,
         Created,
-        Updated
+        Updated,
+        Deleted
     }
 }

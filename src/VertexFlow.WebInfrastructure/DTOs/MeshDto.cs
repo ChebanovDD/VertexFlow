@@ -6,7 +6,7 @@ namespace VertexFlow.WebInfrastructure.DTOs
     internal record MeshDto
     {
         [JsonProperty(PropertyName = "id")]
-        public string Id { get; init; }
+        public string Guid { get; init; }
         
         [JsonProperty(PropertyName = "triangles")]
         public int[] Triangles { get; init; }
