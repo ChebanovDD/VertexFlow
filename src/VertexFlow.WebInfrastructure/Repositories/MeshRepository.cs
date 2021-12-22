@@ -15,9 +15,9 @@ namespace VertexFlow.WebInfrastructure.Repositories
     internal class MeshRepository : IMeshRepository
     {
         private readonly Container _meshContainer;
-        private readonly IProjectRepository _projectRepository;
+        private readonly ProjectRepository _projectRepository;
 
-        public MeshRepository(Container meshContainer, IProjectRepository projectRepository)
+        public MeshRepository(Container meshContainer, ProjectRepository projectRepository)
         {
             _meshContainer = meshContainer;
             _projectRepository = projectRepository;
@@ -46,7 +46,6 @@ namespace VertexFlow.WebInfrastructure.Repositories
         {
             var project = await _projectRepository.GetAsync(projectName, token).ConfigureAwait(false);
 
-            // TODO: One request?
             foreach (var (meshId, meshGuid) in project.MeshIds)
             {
                 var meshDto = await GetMeshDtoAsync(meshGuid, token).ConfigureAwait(false);

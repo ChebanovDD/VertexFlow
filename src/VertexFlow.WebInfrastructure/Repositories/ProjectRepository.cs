@@ -12,7 +12,7 @@ using VertexFlow.WebInfrastructure.Extensions;
 
 namespace VertexFlow.WebInfrastructure.Repositories
 {
-    public class ProjectRepository : IProjectRepository
+    internal class ProjectRepository : IProjectRepository
     {
         private readonly Container _projectContainer;
         

@@ -33,8 +33,8 @@ namespace VertexFlow.WebAPI.Controllers
         [HttpGet("{projectName}")]
         public async Task<IActionResult> Get(string projectName, CancellationToken cancellationToken)
         {
-            var mesh = await _projectService.GetAsync(projectName, cancellationToken);
-            return Ok(_mapper.ToResponse(mesh));
+            var project = await _projectService.GetAsync(projectName, cancellationToken);
+            return Ok(_mapper.ToResponse(project));
         }
 
         [HttpGet]
