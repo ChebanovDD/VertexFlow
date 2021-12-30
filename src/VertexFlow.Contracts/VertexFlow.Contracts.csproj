@@ -8,4 +8,8 @@
       <ProjectReference Include="..\VertexFlow.Core\VertexFlow.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="protobuf-net" Version="3.0.101" />
+    </ItemGroup>
+
 </Project>

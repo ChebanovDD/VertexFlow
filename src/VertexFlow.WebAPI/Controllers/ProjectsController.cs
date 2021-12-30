@@ -45,7 +45,17 @@ namespace VertexFlow.WebAPI.Controllers
                 yield return _mapper.ToResponse(project);
             }
         }
-        
+
+        [HttpGet("{projectName}/meshIds")]
+        public async IAsyncEnumerable<string> GetAllProtoIds(string projectName,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            await foreach (var meshId in _projectService.GetAllMeshIdsAsync(projectName, cancellationToken))
+            {
+                yield return meshId;
+            }
+        }
+
         [HttpDelete("{projectName}")]
         public async Task<IActionResult> Delete(string projectName, CancellationToken cancellationToken)
         {

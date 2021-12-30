@@ -119,6 +119,10 @@
       </Content>
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\VertexFlow.Core\VertexFlow.Core.csproj">
+        <Project>{b322d5e3-cdc3-4ac0-848c-0c75f5222886}</Project>
+        <Name>VertexFlow.Core</Name>
+      </ProjectReference>
       <ProjectReference Include="..\VertexFlow.SDK\VertexFlow.SDK.csproj">
         <Project>{7f5311be-c329-4e0c-b50e-630fd0944328}</Project>
         <Name>VertexFlow.SDK</Name>

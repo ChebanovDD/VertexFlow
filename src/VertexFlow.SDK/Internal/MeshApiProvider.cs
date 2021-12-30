@@ -11,11 +11,13 @@ namespace VertexFlow.SDK.Internal
 {
     internal class MeshApiProvider : IDisposable
     {
+        private readonly IMeshMapper _meshMapper;
         private Dictionary<Type, IMeshApi> _meshApis;
 
         public MeshApiProvider()
         {
             _meshApis = new Dictionary<Type, IMeshApi>();
+            _meshMapper = new MeshMapper();
         }
 
         public IMeshApi GetMeshApi(HttpClient httpClient, IJsonSerializer jsonSerializer)
@@ -45,7 +47,7 @@ namespace VertexFlow.SDK.Internal
                 return meshApi;
             }
 
-            meshApi = new MeshApiService(CreateHttpClient(httpClient, jsonSerializer));
+            meshApi = new MeshApiService(CreateHttpClient(httpClient, jsonSerializer), _meshMapper);
 
             _meshApis.Add(jsonSerializer.GetType(), meshApi);
 

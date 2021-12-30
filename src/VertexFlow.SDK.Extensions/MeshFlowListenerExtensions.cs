@@ -1,4 +1,5 @@
-﻿using VertexFlow.SDK.Extensions.Interfaces;
+﻿using VertexFlow.Core.Interfaces;
+using VertexFlow.SDK.Extensions.Interfaces;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Listeners.Interfaces;
 
@@ -18,7 +19,7 @@ namespace VertexFlow.SDK.Extensions
         /// <typeparam name="TMeshData">The type of object representing the mesh data.</typeparam>
         /// <returns><see cref="IMeshFlowListenerDecorator{TMeshData}"/> interface.</returns>
         public static IMeshFlowListenerDecorator<TMeshData> WithStore<TMeshData>(this IMeshFlowListener listener,
-            IMeshStore<TMeshData> store)
+            IMeshStore<TMeshData> store) where TMeshData : IMeshData
         {
             return new MeshFlowListenerDecorator<TMeshData>(listener, store);
         }

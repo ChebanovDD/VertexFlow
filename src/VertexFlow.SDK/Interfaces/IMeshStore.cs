@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using VertexFlow.Core.Interfaces;
 
 namespace VertexFlow.SDK.Interfaces
 {
@@ -8,7 +9,7 @@ namespace VertexFlow.SDK.Interfaces
     /// Defines methods for reading or deleting existing meshes from a database.
     /// </summary>
     /// <typeparam name="TMeshData">The type of object representing the mesh data.</typeparam>
-    public interface IMeshStore<TMeshData> : IProjectContainer
+    public interface IMeshStore<TMeshData> : IProjectContainer where TMeshData : IMeshData
     {
         /// <summary>
         /// Reads a mesh data from the database as an asynchronous operation.
@@ -22,7 +23,7 @@ namespace VertexFlow.SDK.Interfaces
         /// Reads all meshes from the database as an asynchronous operation.
         /// </summary>
         /// <returns>A <see cref="T:System.Threading.Tasks.Task"/> containing an iterator to go through the meshes.</returns>
-        Task<IEnumerable<TMeshData>> GetAllAsync(); // TODO: Change to IAsyncEnumerable with ASP.NET Core 6.0
+        Task<IEnumerable<TMeshData>> GetAllAsync();
         
         /// <summary>
         /// Delete a mesh data from the database as an asynchronous operation.

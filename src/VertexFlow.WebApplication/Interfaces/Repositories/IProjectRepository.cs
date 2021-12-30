@@ -10,6 +10,7 @@ namespace VertexFlow.WebApplication.Interfaces.Repositories
         Task CreateAsync(string projectName, CancellationToken token);
         Task<Project> GetAsync(string projectName, CancellationToken token);
         IAsyncEnumerable<Project> GetAllAsync(CancellationToken token);
+        IAsyncEnumerable<string> GetAllMeshIdsAsync(string projectName, CancellationToken token);
         Task DeleteAsync(string projectName, CancellationToken token);
     }
 }

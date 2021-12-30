@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using VertexFlow.WebAPI.Formatters;
 using VertexFlow.WebAPI.Interfaces;
 using VertexFlow.WebAPI.Mappers;
 using VertexFlow.WebAPI.Middlewares;
@@ -25,10 +26,12 @@ namespace VertexFlow.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.InputFormatters.Add(new StreamInputFormatter());
+            });
             services.AddApplication();
             services.AddInfrastructure(_configuration);
-            services.AddSingleton<IMeshDataMapper, MeshDataMapper>();
             services.AddSingleton<IProjectDataMapper, ProjectDataMapper>();
             
             services.AddSwaggerGen(c =>

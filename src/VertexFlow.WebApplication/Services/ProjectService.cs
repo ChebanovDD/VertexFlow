@@ -31,6 +31,11 @@ namespace VertexFlow.WebApplication.Services
             return _projectRepository.GetAllAsync(cancellationToken);
         }
 
+        public IAsyncEnumerable<string> GetAllMeshIdsAsync(string projectName, CancellationToken cancellationToken)
+        {
+            return _projectRepository.GetAllMeshIdsAsync(projectName, cancellationToken);
+        }
+
         public async Task DeleteAsync(string projectName, CancellationToken cancellationToken)
         {
             await _projectRepository.DeleteAsync(projectName, cancellationToken).ConfigureAwait(false);

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Autodesk.Revit.DB;
+using VertexFlow.Core.Interfaces;
 
 namespace VertexFlow.RevitAddin.Exporter.Models
 {
-    public class RevitMesh
+    public class RevitMesh : IMeshData
     {
         public string Id { get; }
         public List<XYZ> Normals { get; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using VertexFlow.Core.Interfaces;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Internal;
 using VertexFlow.SDK.Internal.Interfaces;
@@ -40,7 +41,8 @@ namespace VertexFlow.SDK
         /// <param name="jsonSerializer">(Optional) Enables you to control how objects are encoded into JSON.</param>
         /// <typeparam name="TMeshData">The type of object representing the mesh data.</typeparam>
         /// <returns><see cref="IMeshFlow{TMeshData}"/> interface.</returns>
-        public IMeshFlow<TMeshData> CreateMeshFlow<TMeshData>(string projectName = null, IJsonSerializer jsonSerializer = null)
+        public IMeshFlow<TMeshData> CreateMeshFlow<TMeshData>(string projectName = null,
+            IJsonSerializer jsonSerializer = null) where TMeshData : IMeshData
         {
             return new MeshFlow<TMeshData>(projectName, GetMeshApi(jsonSerializer));
         }
@@ -53,11 +55,12 @@ namespace VertexFlow.SDK
         /// <param name="jsonSerializer">(Optional) Enables you to control how objects are encoded into JSON.</param>
         /// <typeparam name="TMeshData">The type of object representing the mesh data.</typeparam>
         /// <returns><see cref="IMeshStore{TMeshData}"/> interface.</returns>
-        public IMeshStore<TMeshData> CreateMeshStore<TMeshData>(string projectName = null, IJsonSerializer jsonSerializer = null)
+        public IMeshStore<TMeshData> CreateMeshStore<TMeshData>(string projectName = null,
+            IJsonSerializer jsonSerializer = null) where TMeshData : IMeshData
         {
             return new MeshStore<TMeshData>(projectName, GetMeshApi(jsonSerializer));
         }
-        
+
         /// <summary>
         /// Releases and disposes of resources used by the <see cref="T:System.Net.Http.HttpClient"/>.
         /// </summary>

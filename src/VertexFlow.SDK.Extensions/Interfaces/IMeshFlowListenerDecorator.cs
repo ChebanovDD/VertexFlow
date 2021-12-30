@@ -1,4 +1,5 @@
 ﻿using System;
+using VertexFlow.Core.Interfaces;
 using VertexFlow.SDK.Listeners.Interfaces;
 
 namespace VertexFlow.SDK.Extensions.Interfaces
@@ -7,7 +8,7 @@ namespace VertexFlow.SDK.Extensions.Interfaces
     /// Extension for <see cref="IMeshFlowListener"/>.
     /// </summary>
     /// <typeparam name="TMeshData">The type of object representing the mesh data.</typeparam>
-    public interface IMeshFlowListenerDecorator<out TMeshData> : IMeshFlowListener
+    public interface IMeshFlowListenerDecorator<out TMeshData> : IMeshFlowListener where TMeshData : IMeshData
     {
         /// <summary>
         /// Allows to set an action to monitor mesh data adding to the database.

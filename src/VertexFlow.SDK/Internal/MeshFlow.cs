@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using VertexFlow.Core.Interfaces;
 using VertexFlow.SDK.Interfaces;
 using VertexFlow.SDK.Internal.Interfaces;
 
 namespace VertexFlow.SDK.Internal
 {
-    internal class MeshFlow<TMeshData> : IMeshFlow<TMeshData>
+    internal class MeshFlow<TMeshData> : IMeshFlow<TMeshData> where TMeshData : IMeshData
     {
         private readonly IMeshApi _meshesApi;
 

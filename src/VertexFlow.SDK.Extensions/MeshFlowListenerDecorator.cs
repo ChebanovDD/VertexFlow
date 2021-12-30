@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using VertexFlow.Core.Interfaces;
 using VertexFlow.SDK.Extensions.Extensions;
 using VertexFlow.SDK.Extensions.Interfaces;
 using VertexFlow.SDK.Interfaces;
@@ -9,7 +10,7 @@ using VertexFlow.SDK.Listeners.Interfaces;
 
 namespace VertexFlow.SDK.Extensions
 {
-    internal class MeshFlowListenerDecorator<TMeshData> : IMeshFlowListenerDecorator<TMeshData>
+    internal class MeshFlowListenerDecorator<TMeshData> : IMeshFlowListenerDecorator<TMeshData> where TMeshData : IMeshData
     {
         private bool _continueOnCapturedContext = true;
         private Action<TMeshData> _onMeshCreated;

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using VertexFlow.Core.Interfaces;
 
 namespace VertexFlow.SDK.Interfaces
 {
@@ -7,7 +8,7 @@ namespace VertexFlow.SDK.Interfaces
     /// Defines methods for adding or replacing existing meshes in a database.
     /// </summary>
     /// <typeparam name="TMeshData">The type of object representing the mesh data.</typeparam>
-    public interface IMeshFlow<in TMeshData> : IProjectContainer
+    public interface IMeshFlow<in TMeshData> : IProjectContainer where TMeshData : IMeshData
     {
         /// <summary>
         /// Adds a mesh as an asynchronous operation to the database.

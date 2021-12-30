@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using VertexFlow.WebApplication.Models;
 
 namespace VertexFlow.WebApplication.Interfaces.Services
 {
     public interface IMeshService
     {
-        Task AddAsync(string projectName, Mesh mesh, CancellationToken cancellationToken);
-        Task<Mesh> GetAsync(string projectName, string meshId, CancellationToken cancellationToken);
-        IAsyncEnumerable<Mesh> GetAllAsync(string projectName, CancellationToken cancellationToken);
-        Task UpdateAsync(string projectName, Mesh mesh, CancellationToken cancellationToken);
+        Task AddAsync(string projectName, string meshId, Stream meshData, CancellationToken cancellationToken);
+        Task<Stream> GetAsync(string projectName, string meshId, CancellationToken cancellationToken);
+        Task UpdateAsync(string projectName, string meshId, Stream meshData, CancellationToken cancellationToken);
         Task DeleteAsync(string projectName, string meshId, CancellationToken cancellationToken);
     }
 }

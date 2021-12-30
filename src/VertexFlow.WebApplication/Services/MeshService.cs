@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using VertexFlow.WebApplication.Enums;
 using VertexFlow.WebApplication.Interfaces;
 using VertexFlow.WebApplication.Interfaces.Repositories;
 using VertexFlow.WebApplication.Interfaces.Services;
-using VertexFlow.WebApplication.Models;
 
 namespace VertexFlow.WebApplication.Services
 {
@@ -20,34 +19,31 @@ namespace VertexFlow.WebApplication.Services
             _meshNotifier = meshNotifier;
         }
 
-        public async Task AddAsync(string projectName, Mesh mesh, CancellationToken cancellationToken)
+        public async Task AddAsync(string projectName, string meshId, Stream meshData,
+            CancellationToken cancellationToken)
         {
-            await _meshRepository.AddAsync(projectName, mesh, cancellationToken).ConfigureAwait(false);
-            await _meshNotifier.Created(projectName, mesh.Id, cancellationToken).ConfigureAwait(false);
+            await _meshRepository.AddAsync(projectName, meshId, meshData, cancellationToken).ConfigureAwait(false);
+            await _meshNotifier.Created(projectName, meshId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<Mesh> GetAsync(string projectName, string meshId, CancellationToken cancellationToken)
+        public async Task<Stream> GetAsync(string projectName, string meshId, CancellationToken cancellationToken)
         {
             return await _meshRepository.GetAsync(projectName, meshId, cancellationToken).ConfigureAwait(false);
         }
 
-        public IAsyncEnumerable<Mesh> GetAllAsync(string projectName, CancellationToken cancellationToken)
+        public async Task UpdateAsync(string projectName, string meshId, Stream meshData,
+            CancellationToken cancellationToken)
         {
-            return _meshRepository.GetAllAsync(projectName, cancellationToken);
-        }
-
-        public async Task UpdateAsync(string projectName, Mesh mesh, CancellationToken cancellationToken)
-        {
-            var response = await _meshRepository.UpdateAsync(projectName, mesh, cancellationToken)
+            var response = await _meshRepository.UpdateAsync(projectName, meshId, meshData, cancellationToken)
                 .ConfigureAwait(false);
-            
+
             if (response == MeshStatusCode.Created)
             {
-                await _meshNotifier.Created(projectName, mesh.Id, cancellationToken).ConfigureAwait(false);
+                await _meshNotifier.Created(projectName, meshId, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                await _meshNotifier.Updated(projectName, mesh.Id, cancellationToken).ConfigureAwait(false);
+                await _meshNotifier.Updated(projectName, meshId, cancellationToken).ConfigureAwait(false);
             }
         }
 

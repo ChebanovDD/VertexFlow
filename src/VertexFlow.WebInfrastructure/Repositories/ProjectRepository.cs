@@ -47,6 +47,30 @@ namespace VertexFlow.WebInfrastructure.Repositories
             }
         }
 
+        public async IAsyncEnumerable<string> GetAllMeshIdsAsync(string projectName,
+            [EnumeratorCancellation] CancellationToken token)
+        {
+            ProjectDto projectDto = null;
+            
+            try
+            {
+                projectDto = await GetProjectDtoAsync(projectName, token).ConfigureAwait(false);
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+            }
+
+            if (projectDto == null)
+            {
+                yield break;
+            }
+            
+            foreach (var pair in projectDto.MeshIds)
+            {
+                yield return pair.Key;
+            }
+        }
+
         public async Task DeleteAsync(string projectName, CancellationToken token)
         {
             // TODO: Remove all meshes.

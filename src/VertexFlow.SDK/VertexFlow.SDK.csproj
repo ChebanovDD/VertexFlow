@@ -6,8 +6,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Mapster" Version="7.2.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\VertexFlow.Contracts\VertexFlow.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

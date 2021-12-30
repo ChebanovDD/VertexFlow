@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Azure.Cosmos;
@@ -33,9 +34,10 @@ namespace VertexFlow.WebInfrastructure
             var projectContainer = await CreateProjectRepositoryAsync(database, cosmosConfig).ConfigureAwait(false);
 
             var projectRepository = new ProjectRepository(projectContainer);
-
+            var blobServiceClient =
+                new BlobServiceClient(configuration.GetValue<string>("AzureBlobStorageConnectionString"));
             services.AddSingleton<IProjectRepository>(projectRepository);
-            services.AddSingleton<IMeshRepository>(new MeshRepository(meshContainer, projectRepository));
+            services.AddSingleton<IMeshRepository>(new MeshRepository(meshContainer, projectRepository, blobServiceClient));
         }
 
         private static async Task<Database> GetOrCreateDatabaseAsync(IConfiguration cosmosConfig)
