@@ -26,24 +26,24 @@ namespace VertexFlow.SDK.Internal.Services
             _meshMapper = meshMapper;
         }
 
-        public async Task Add<TRequest>(string projectName, TRequest meshRequest, CancellationToken cancellationToken)
-            where TRequest : IMeshData
+        public async Task Add<TMeshData>(string projectName, TMeshData meshData, CancellationToken cancellationToken)
+            where TMeshData : IMeshData
         {
-            using (var stream = CreateMeshStream(meshRequest))
+            using (var stream = CreateMeshStream(meshData))
             {
                 await _httpClient
-                    .PostAsStreamAsync($"{GetUri(projectName)}/{meshRequest.Id}", stream, cancellationToken)
+                    .PostAsStreamAsync($"{GetUri(projectName)}/{meshData.Id}", stream, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
 
-        public async Task<TResponse> GetAsync<TResponse>(string projectName, string meshId,
+        public async Task<TMeshData> GetAsync<TMeshData>(string projectName, string meshId,
             CancellationToken cancellationToken)
         {
-            return await GetMeshAsync<TResponse>(GetUri(projectName), meshId, cancellationToken).ConfigureAwait(false);
+            return await GetMeshAsync<TMeshData>(GetUri(projectName), meshId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<TResponse>> GetAllAsync<TResponse>(string projectName,
+        public async Task<IEnumerable<TMeshData>> GetAllAsync<TMeshData>(string projectName,
             CancellationToken cancellationToken)
         {
             // TODO: Move to ProjectApiService.
@@ -52,17 +52,17 @@ namespace VertexFlow.SDK.Internal.Services
                 .GetAsObjectAsync<IEnumerable<string>>($"{baseUrl}/meshIds", cancellationToken).ConfigureAwait(false);
 
             return await Task
-                .WhenAll(meshIds.Select(meshId => GetMeshAsync<TResponse>(GetUri(projectName), meshId, cancellationToken)))
+                .WhenAll(meshIds.Select(meshId => GetMeshAsync<TMeshData>(GetUri(projectName), meshId, cancellationToken)))
                 .ConfigureAwait(false);
         }
 
-        public async Task UpdateAsync<TRequest>(string projectName, TRequest meshRequest,
-            CancellationToken cancellationToken) where TRequest : IMeshData
+        public async Task UpdateAsync<TMeshData>(string projectName, TMeshData meshData,
+            CancellationToken cancellationToken) where TMeshData : IMeshData
         {
-            using (var stream = CreateMeshStream(meshRequest))
+            using (var stream = CreateMeshStream(meshData))
             {
                 await _httpClient
-                    .PutAsStreamAsync($"{GetUri(projectName)}/{meshRequest.Id}", stream, cancellationToken)
+                    .PutAsStreamAsync($"{GetUri(projectName)}/{meshData.Id}", stream, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
@@ -101,7 +101,7 @@ namespace VertexFlow.SDK.Internal.Services
         }
         
         // TODO: Change architecture.
-        private async Task<TResponse> GetMeshAsync<TResponse>(string baseUrl, string meshId,
+        private async Task<TMeshData> GetMeshAsync<TMeshData>(string baseUrl, string meshId,
             CancellationToken cancellationToken)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}/{meshId}"))
@@ -111,8 +111,8 @@ namespace VertexFlow.SDK.Internal.Services
 
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
-                    var mesh = Serializer.Deserialize<MeshDataProto>(stream);
-                    return _meshMapper.To<TResponse>(mesh);
+                    var meshDataProto = Serializer.Deserialize<MeshDataProto>(stream);
+                    return _meshMapper.To<TMeshData>(meshDataProto);
                 }
             }
             

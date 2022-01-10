@@ -47,7 +47,7 @@ namespace VertexFlow.WebAPI.Controllers
         }
 
         [HttpGet("{projectName}/meshIds")]
-        public async IAsyncEnumerable<string> GetAllProtoIds(string projectName,
+        public async IAsyncEnumerable<string> GetAllMeshIds(string projectName,
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             await foreach (var meshId in _projectService.GetAllMeshIdsAsync(projectName, cancellationToken))

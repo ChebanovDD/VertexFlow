@@ -24,8 +24,11 @@ namespace VertexFlow.WebAPI.Controllers
         public async Task<IActionResult> Add(string projectName, string meshId, [FromBody] Stream meshData,
             CancellationToken cancellationToken)
         {
-            await _meshService.AddAsync(projectName, meshId, meshData, cancellationToken);
-            return NoContent();
+            await using (meshData)
+            {
+                await _meshService.AddAsync(projectName, meshId, meshData, cancellationToken);
+                return NoContent();
+            }
         }
 
         [HttpGet]
@@ -39,8 +42,11 @@ namespace VertexFlow.WebAPI.Controllers
         public async Task<IActionResult> Update(string projectName, string meshId, [FromBody] Stream meshData,
             CancellationToken cancellationToken)
         {
-            await _meshService.UpdateAsync(projectName, meshId, meshData, cancellationToken);
-            return NoContent();
+            await using (meshData)
+            {
+                await _meshService.UpdateAsync(projectName, meshId, meshData, cancellationToken);
+                return NoContent();
+            }
         }
 
         [HttpDelete]

@@ -7,11 +7,10 @@ namespace VertexFlow.SDK.Internal.Interfaces
 {
     internal interface IMeshApi
     {
-        Task Add<TRequest>(string projectName, TRequest meshRequest, CancellationToken cancellationToken) where TRequest : IMeshData;
-        Task<TResponse> GetAsync<TResponse>(string projectName, string meshId, CancellationToken cancellationToken);
-        Task<IEnumerable<TResponse>> GetAllAsync<TResponse>(string projectName, CancellationToken cancellationToken);
-        // Task<IEnumerable<TResponse>> GetAllAsync<TResponse>(IEnumerable<string> meshIds, CancellationToken cancellationToken);
-        Task UpdateAsync<TRequest>(string projectName, TRequest meshRequest, CancellationToken cancellationToken) where TRequest : IMeshData;
+        Task Add<TMeshData>(string projectName, TMeshData meshData, CancellationToken cancellationToken) where TMeshData : IMeshData;
+        Task<TMeshData> GetAsync<TMeshData>(string projectName, string meshId, CancellationToken cancellationToken);
+        Task<IEnumerable<TMeshData>> GetAllAsync<TMeshData>(string projectName, CancellationToken cancellationToken);
+        Task UpdateAsync<TMeshData>(string projectName, TMeshData meshData, CancellationToken cancellationToken) where TMeshData : IMeshData;
         Task DeleteAsync(string projectName, string meshId, CancellationToken cancellationToken);
     }
 }
